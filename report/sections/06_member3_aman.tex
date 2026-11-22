@@ -1,0 +1,71 @@
+% ---------------------------------------------------------------------------
+% OWNER: Aman Kumar Lahoti - who students are (regression + statistics).
+% Follow TEAM_INSTRUCTIONS.md, Part C. Same structure as Section 4 (Tushaar).
+% Figures are wired below: once your script saves images/M3_*.png with these
+% names they appear automatically. Replace every \todo box.
+% ---------------------------------------------------------------------------
+\section{Aman Kumar Lahoti: Exam Score (Regression and Statistical Tests)}
+\label{sec:m3}
+
+\paragraph{Driving question.}
+\todo{One paragraph. Suggested: A1 (Appendix, Figs.~24--26) found tutoring to be
+the one background lever (+2.8 points). How much of the exam score can be
+modelled from all features, how does the 100-point ceiling distort that model,
+and does tutoring survive once prior attainment is controlled?}
+
+\paragraph{Method summary.}
+\todo{One paragraph: OLS with HC3 robust errors (statsmodels~\cite{seabold2010})
+and gradient boosting on the training split; test-set $R^2$/MAE; residual
+diagnostics; then median (quantile) regression~\cite{koenker1978} and a
+two-way ANOVA/ANCOVA for income $\times$ tutoring.}
+
+\teamfig{\textwidth}{images/M3_workflow_unrolled.png}{Member~3's workflow,
+unrolled into two iterations with the \emph{Feedback loop} edge labelled.
+\todoi{finish caption}}{fig:m3-workflow}
+
+\todo{Add a task/rationale table like Table~\ref{tab:m1-tasks}.}
+
+\subsection{Iteration 1: all features, raw score}
+
+\teamfig{\textwidth}{images/M3_fig01_iter1_fit.png}{\todoi{Caption: predicted vs.
+actual (test) for OLS and gradient boosting; quote test $R^2$.}}{fig:m3-fit}
+
+\teamfig{\textwidth}{images/M3_fig02_iter1_residuals.png}{\todoi{Caption: OLS
+residual vs.\ fitted. The straight upper edge is the line
+residual $=100-$fitted: the ceiling.}}{fig:m3-resid}
+
+\teamfig{\textwidth}{images/M3_fig03_iter1_coefficients.png}{\todoi{Caption: OLS
+coefficients with 95\% CIs (standardised).}}{fig:m3-coef}
+
+\paragraph{Knowledge K1.}
+\todo{Numbered inferences. Expect: OLS test $R^2\approx0.87$, essentially all
+from prior GPA (slope about 23 points per GPA unit); every other coefficient is
+near zero with $p>0.05$, including tutoring ($p\approx0.40$). About a quarter of
+residuals sit exactly on the residual $=100-$fitted edge, and 40\% of students
+share the single value GPA $=4.0$, so both ends of the model are censored. OLS
+never predicts above 100 here; the censoring shows up as a residual edge, not as
+impossible predictions.}
+
+\subsection{Feedback loop: transforming the data}
+\todo{T1: drop GPA $=4.0$ students (capped predictor; 40\% of rows).
+T2: replace mean (OLS) with median regression, which is not moved by the
+$\sim$7\% of the remaining students who score exactly 100.
+T3: test tutoring with prior GPA as a covariate (ANCOVA). Say why each follows
+from K1.}
+
+\subsection{Iteration 2: censoring-aware models}
+
+\teamfig{\textwidth}{images/M3_fig04_iter2_forest.png}{\todoi{Caption: coefficient
+forest plot, median regression on GPA $<4.0$, with 95\% CIs.}}{fig:m3-forest}
+
+\teamfig{\textwidth}{images/M3_fig05_iter2_tutoring.png}{\todoi{Caption: tutoring
+gap by income band, raw vs.\ GPA-adjusted.}}{fig:m3-tutor}
+
+\paragraph{Knowledge K2.}
+\todo{Numbered inferences. Expect: in median regression on GPA $<4.0$, tutoring
+$\approx0.00$ ($p\approx0.94$) and study hours $\approx0.00$; ANOVA raw shows
+tutoring $p<10^{-100}$ with only a borderline income interaction ($p\approx0.05$); with prior GPA as covariate
+tutoring $p\approx0.43$. Tutored students arrive with higher prior GPA (3.66
+vs.\ 3.54). So A1's ``one real lever'' is also the prior-GPA confound. Discuss
+time order: tutoring access and prior GPA are recorded together, so the data
+cannot say which came first.}

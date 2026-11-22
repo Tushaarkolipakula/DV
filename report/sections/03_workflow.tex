@@ -1,0 +1,44 @@
+% ---------------------------------------------------------------------------
+% Team workflow overview (written by Kolipakula Sai Tushaar).
+% DONE except: Advaya and Aman update their rows in diagrams/A3_master_workflow.dot
+% (replace the two "(fill in)" K2 boxes) and re-render the PNG. No text edits needed.
+% ---------------------------------------------------------------------------
+\section{Visual Analytics Workflow}
+\label{sec:workflow}
+
+The workflow follows the visual analytics process of Keim et~al.~\cite{keim2008},
+often drawn as a diamond: \emph{data} is mapped to \emph{visualizations} and used
+to build \emph{models}; models are visualized; the analyst draws
+\emph{knowledge} from both; and that knowledge is fed back to change the data or
+the models. The brief asks for this loop to be shown \emph{unrolled}, so each
+pass through the diamond appears once and the edge that starts the second pass
+is labelled \emph{Feedback loop}.
+
+Fig.~\ref{fig:master-workflow} shows the team's workflow. One shared
+preprocessing stage (Section~\ref{sec:a3-prep}) feeds three strands, one per
+member, each owning one family of methods required by the brief:
+\begin{itemize}
+  \item \textbf{Member~1, what students do:} unsupervised mining (K-means
+        clustering, Gaussian mixtures) with statistical tests.
+  \item \textbf{Member~2, what students feel:} supervised classification of
+        the dropout-risk flag.
+  \item \textbf{Member~3, who students are:} supervised regression and
+        statistical modelling of the exam score.
+\end{itemize}
+Each strand runs iteration~1, draws an inference, transforms the data because
+of that inference, and runs iteration~2 with new visualizations. The three
+second-iteration results meet in the synthesis (Section~\ref{sec:synthesis}).
+Self-loops are kept to a minimum: the only one is parameter refinement inside
+an iteration (for example, choosing $k$), which is drawn as a dashed edge in
+the member diagrams.
+
+\begin{sidewaysfigure}
+  \centering
+  \includegraphics[width=\textheight]{images/A3_master_workflow.png}
+  \caption{The team's visual analytics workflow. Shared preprocessing feeds
+  three Keim et~al.\ diamonds, each unrolled into two iterations
+  (D = data, V = visualization, M = model, K = knowledge, T = transformation).
+  The red edge labelled \emph{Feedback loop} marks where an inference from
+  iteration~1 changes the data used in iteration~2.}
+  \label{fig:master-workflow}
+\end{sidewaysfigure}

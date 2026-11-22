@@ -1,0 +1,71 @@
+% ---------------------------------------------------------------------------
+% OWNER: Advaya Bhardwaj - what students feel (supervised classification).
+% Follow TEAM_INSTRUCTIONS.md, Part B. Same structure as Section 4 (Tushaar):
+% copy its style. Figures are already wired below: once your script saves
+% images/M2_*.png with these names they appear automatically.
+% Replace every \todo box; delete this comment block when done.
+% ---------------------------------------------------------------------------
+\section{Advaya Bhardwaj: Dropout Risk (Classification)}
+\label{sec:m2}
+
+\paragraph{Driving question.}
+\todo{One paragraph. Suggested: A1 (Appendix, Fig.~21) found that the
+dropout-risk flag is a hard rule on stress and motivation. Can a classifier
+predict dropout risk, and once the rule's own inputs are removed, does anything
+about a student still predict it?}
+
+\paragraph{Method summary.}
+\todo{One paragraph: logistic regression, decision tree, random forest
+(scikit-learn~\cite{pedregosa2011}); class weights for the 2\% positive rate;
+metrics are PR-AUC, ROC-AUC and F1 on the held-out test split (accuracy is
+useless at 98\% negatives); permutation importance. Fit on train only.}
+
+\teamfig{\textwidth}{images/M2_workflow_unrolled.png}{Member~2's workflow,
+unrolled into two iterations with the \emph{Feedback loop} edge labelled.
+\todoi{finish caption}}{fig:m2-workflow}
+
+\todo{Add a task/rationale table like Table~\ref{tab:m1-tasks}: one row per
+figure with stage, task verb and why that chart type.}
+
+\subsection{Iteration 1: all features}
+
+\teamfig{0.75\textwidth}{images/M2_fig01_rule_heatmap.png}{\todoi{Caption: dropout
+rate for every stress $\times$ motivation cell on the training split.}}{fig:m2-rule}
+
+\teamfig{\textwidth}{images/M2_fig02_iter1_pr_roc.png}{\todoi{Caption: PR and ROC
+curves for the three models, test split. Quote PR-AUC per model.}}{fig:m2-pr1}
+
+\teamfig{\textwidth}{images/M2_fig03_iter1_tree.png}{\todoi{Caption: depth-2 tree
+and importances. The tree should split on stress $>8.05$ then
+motivation $\le3.5$.}}{fig:m2-tree}
+
+\paragraph{Knowledge K1.}
+\todo{Numbered inferences. Expect: tree and forest reach PR-AUC 1.00;
+logistic regression only about 0.88 because a straight boundary cannot draw an
+AND-rectangle; the tree recovers the exact thresholds. Conclusion: the label is
+a definition, so the models read it back (label leakage).}
+
+\subsection{Feedback loop: transforming the data}
+\todo{Describe T1: drop \texttt{stress\_level} and \texttt{motivation\_level}
+(\texttt{exam\_anxiety\_score} is already removed in Section~\ref{sec:a3-prep});
+keep class weights. Say why each change follows from K1.}
+
+\subsection{Iteration 2: leak-free features}
+
+\teamfig{\textwidth}{images/M2_fig04_iter2_pr_before_after.png}{\todoi{Caption:
+PR curves before and after removing the rule variables, with the 2\% base
+rate as a reference line.}}{fig:m2-pr2}
+
+\teamfig{\textwidth}{images/M2_fig05_iter2_importance.png}{\todoi{Caption:
+permutation importance of the leak-free model, test split.}}{fig:m2-imp}
+
+\teamfig{\textwidth}{images/M2_fig06_proxy_check.png}{\todoi{Caption: dropout
+rate by prior-GPA band and by mental-health rating.}}{fig:m2-proxy}
+
+\paragraph{Knowledge K2.}
+\todo{Numbered inferences. Expect: PR-AUC falls to about 0.04--0.08 (base rate
+0.02) and ROC-AUC to about 0.70. Check which features carry the remaining
+signal; a quick check found prior GPA alone gives ROC 0.67, because prior GPA
+correlates $r=0.27$ with motivation, and mental health steps down at stress 7
+(A1 Fig.~23). So what is left is mostly proxies for the two rule variables. Say
+what this means: the flag measures how students feel, not what they do.}

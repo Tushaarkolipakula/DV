@@ -1,0 +1,44 @@
+// Member 3 TEMPLATE: edit the TODO text in the boxes, then render from this folder:
+//   dot -Tpng -Gdpi=170 M3_workflow_unrolled.dot -o ../images/M3_workflow_unrolled.png
+// Keep the red "FEEDBACK LOOP" edge: the brief requires that label.
+digraph M1 {
+  rankdir=TB; newrank=true; splines=spline; nodesep=0.45; ranksep=0.45;
+  bgcolor="#fcfcfb"; pad=0.25;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10,
+        color="#8a8985", fillcolor="white", penwidth=1.2, margin="0.14,0.08"];
+  edge [fontname="Helvetica", fontsize=8.5, color="#52514e", fontcolor="#52514e", penwidth=1.2];
+  label="Member 3 (Aman Kumar Lahoti): exam score - Keim visual analytics diamond, unrolled into two iterations";
+  labelloc=t; labeljust=l; fontname="Helvetica-Bold"; fontsize=13;
+
+  subgraph cluster_it1 {
+    label="Iteration 1"; fontname="Helvetica-Bold"; fontsize=11; style="rounded,dashed"; color="#b9b8b3";
+    D1 [label="DATA D1\nTrain split (64,000)\nall features\ntarget: raw exam score", fillcolor="#eef4fc", color="#2a78d6"];
+    V1 [label="VISUALIZE\nscore vs prior GPA\n(A1 Fig 25)", fillcolor="#fff4e5", color="#eda100"];
+    M1 [label="MODEL\nOLS (HC3) +\ngradient boosting", fillcolor="#e8f7f1", color="#1baf7a"];
+    V1b [label="VISUALIZE MODEL\nFig 1 predicted vs actual\nFig 2 residuals\nFig 3 coefficients", fillcolor="#fff4e5", color="#eda100"];
+    K1 [label="KNOWLEDGE K1\nTODO: e.g. GPA dominates;\nceiling edge; GPA cap", fillcolor="#f3f0fb", color="#6250d6"];
+    D1 -> V1 [label="mapping"];
+    V1 -> M1 [label="model\nbuilding"];
+    M1 -> V1b [label="model\nvisualization"];
+    V1b -> K1 [label="inference"];
+    V1b -> M1 [label="parameter\nrefinement\n(hyper-parameters)", style=dashed, constraint=false];
+    {rank=same; D1; V1; M1; V1b; K1;}
+  }
+
+  T [label="TRANSFORM\nT1 drop GPA = 4.0 rows\nT2 median regression\nT3 GPA as covariate", fillcolor="#fdecec", color="#e34948", penwidth=2];
+
+  subgraph cluster_it2 {
+    label="Iteration 2"; fontname="Helvetica-Bold"; fontsize=11; style="rounded,dashed"; color="#b9b8b3";
+    D2 [label="DATA D2\nGPA < 4.0 rows,\ncensor-robust target", fillcolor="#eef4fc", color="#2a78d6"];
+    M2 [label="MODEL\nmedian regression\n+ ANOVA / ANCOVA", fillcolor="#e8f7f1", color="#1baf7a"];
+    V2 [label="VISUALIZE\nFig 4 forest plot\nFig 5 tutoring raw\nvs adjusted", fillcolor="#fff4e5", color="#eda100"];
+    K2 [label="KNOWLEDGE K2\nTODO: your conclusion\n(key numbers)", fillcolor="#f3f0fb", color="#6250d6"];
+    D2 -> M2 [label="model\nbuilding"];
+    M2 -> V2 [label="model\nvisualization"];
+    V2 -> K2 [label="inference"];
+    {rank=same; D2; M2; V2; K2;}
+  }
+
+  K1 -> T [label="FEEDBACK LOOP", color="#e34948", fontcolor="#e34948", penwidth=2.6, fontsize=10, fontname="Helvetica-Bold"];
+  T -> D2 [label="transformation", color="#e34948", fontcolor="#e34948", penwidth=2];
+}

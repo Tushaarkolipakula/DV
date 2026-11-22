@@ -1,0 +1,369 @@
+{
+  "it1_max_abs_r_between_habits": 0.006938142171782278,
+  "it1_r_with_score": {
+    "study_hours_per_day": 0.243,
+    "sleep_hours": 0.089,
+    "exercise_frequency": 0.085,
+    "attendance_percentage": 0.002,
+    "social_media_hours": -0.006,
+    "netflix_hours": -0.0
+  },
+  "it1_hopkins": 0.6115443716554708,
+  "it1_k_selection": [
+    {
+      "k": 2,
+      "inertia": 335220.9557,
+      "silhouette": 0.1268,
+      "silhouette_null": 0.127,
+      "stability_ari": 0.0009,
+      "gmm_bic": 135712.6882
+    },
+    {
+      "k": 3,
+      "inertia": 306359.3235,
+      "silhouette": 0.1141,
+      "silhouette_null": 0.1132,
+      "stability_ari": 0.5167,
+      "gmm_bic": 135116.4648
+    },
+    {
+      "k": 4,
+      "inertia": 283094.8633,
+      "silhouette": 0.1169,
+      "silhouette_null": 0.1164,
+      "stability_ari": 0.2352,
+      "gmm_bic": 134789.9897
+    },
+    {
+      "k": 5,
+      "inertia": 265713.429,
+      "silhouette": 0.1189,
+      "silhouette_null": 0.118,
+      "stability_ari": 0.2083,
+      "gmm_bic": 134508.1882
+    },
+    {
+      "k": 6,
+      "inertia": 251543.674,
+      "silhouette": 0.1184,
+      "silhouette_null": 0.1157,
+      "stability_ari": 0.2077,
+      "gmm_bic": 134389.5649
+    },
+    {
+      "k": 7,
+      "inertia": 238765.875,
+      "silhouette": 0.1182,
+      "silhouette_null": 0.1185,
+      "stability_ari": 0.2502,
+      "gmm_bic": 134403.9208
+    },
+    {
+      "k": 8,
+      "inertia": 227807.1804,
+      "silhouette": 0.1245,
+      "silhouette_null": 0.1239,
+      "stability_ari": 0.3662,
+      "gmm_bic": 134348.3643
+    }
+  ],
+  "it1_k": 4,
+  "it1_centroids_z": {
+    "0": {
+      "study_hours_per_day": -0.01,
+      "sleep_hours": -0.01,
+      "exercise_frequency": 0.94,
+      "attendance_percentage": 0.01,
+      "social_media_hours": 0.81,
+      "netflix_hours": -0.03
+    },
+    "1": {
+      "study_hours_per_day": 0.06,
+      "sleep_hours": -0.03,
+      "exercise_frequency": -0.0,
+      "attendance_percentage": 0.02,
+      "social_media_hours": -0.83,
+      "netflix_hours": -0.94
+    },
+    "2": {
+      "study_hours_per_day": -0.05,
+      "sleep_hours": 0.07,
+      "exercise_frequency": 0.03,
+      "attendance_percentage": -0.03,
+      "social_media_hours": -0.83,
+      "netflix_hours": 0.96
+    },
+    "3": {
+      "study_hours_per_day": 0.0,
+      "sleep_hours": -0.03,
+      "exercise_frequency": -0.96,
+      "attendance_percentage": 0.0,
+      "social_media_hours": 0.8,
+      "netflix_hours": 0.02
+    }
+  },
+  "it1_centroid_spread_z": {
+    "study_hours_per_day": 0.1,
+    "sleep_hours": 0.1,
+    "exercise_frequency": 1.9,
+    "attendance_percentage": 0.05,
+    "social_media_hours": 1.64,
+    "netflix_hours": 1.9
+  },
+  "it1_pca_var": [
+    0.169,
+    0.167
+  ],
+  "it1_kruskal_H": 181.91111282856517,
+  "it1_kruskal_p": 3.4098984549913026e-39,
+  "it1_eta2": 0.0027956608667505027,
+  "it1_cluster_score": {
+    "1": 90.05,
+    "2": 89.22,
+    "3": 89.19,
+    "4": 88.06
+  },
+  "it1_cluster_gpa": {
+    "1": 3.638,
+    "2": 3.609,
+    "3": 3.604,
+    "4": 3.556
+  },
+  "it1_score_gap": 1.993090909792798,
+  "it1_share_below80": {
+    "1": 0.188,
+    "2": 0.216,
+    "3": 0.218,
+    "4": 0.253
+  },
+  "it1_within_band_gap": {
+    "Below 80": 1.21,
+    "80-90": 0.22,
+    "90-99": 0.12,
+    "Elite (4.0)": 0.06
+  },
+  "T1_dropped": [
+    "attendance_percentage",
+    "social_media_hours",
+    "netflix_hours"
+  ],
+  "T1_added": [
+    "leisure_screen_share"
+  ],
+  "T1_r_share_study": -0.6438193213966753,
+  "T2_n_bins": 25,
+  "T2_r2_score_on_gpa_bins_test": 0.8700576120560843,
+  "T2_adj_sd_train": 4.1658479778048285,
+  "T3_share_gpa_ceiling": 0.39896875,
+  "T3_score_ceiling_within_gpa4": 0.5364611890028981,
+  "it2_hopkins": 0.8767785048866512,
+  "it2_k_selection": [
+    {
+      "k": 2,
+      "inertia": 188528.4631,
+      "silhouette": 0.2325,
+      "silhouette_null": 0.194,
+      "stability_ari": 0.9903,
+      "gmm_bic": 85692.627
+    },
+    {
+      "k": 3,
+      "inertia": 156251.9423,
+      "silhouette": 0.2218,
+      "silhouette_null": 0.172,
+      "stability_ari": 0.3068,
+      "gmm_bic": 85502.5354
+    },
+    {
+      "k": 4,
+      "inertia": 136802.5364,
+      "silhouette": 0.2121,
+      "silhouette_null": 0.1714,
+      "stability_ari": 0.5904,
+      "gmm_bic": 84928.433
+    },
+    {
+      "k": 5,
+      "inertia": 121973.2045,
+      "silhouette": 0.2028,
+      "silhouette_null": 0.1784,
+      "stability_ari": 0.5284,
+      "gmm_bic": 83878.1217
+    },
+    {
+      "k": 6,
+      "inertia": 110252.7171,
+      "silhouette": 0.2034,
+      "silhouette_null": 0.1722,
+      "stability_ari": 0.4,
+      "gmm_bic": 84443.2094
+    },
+    {
+      "k": 7,
+      "inertia": 101156.3975,
+      "silhouette": 0.1993,
+      "silhouette_null": 0.1786,
+      "stability_ari": 0.6705,
+      "gmm_bic": 84319.6841
+    },
+    {
+      "k": 8,
+      "inertia": 94220.2679,
+      "silhouette": 0.2031,
+      "silhouette_null": 0.1827,
+      "stability_ari": 0.5002,
+      "gmm_bic": 84498.3332
+    }
+  ],
+  "it2_k": 2,
+  "it2_cluster_names": [
+    "Study-focused",
+    "Leisure-heavy"
+  ],
+  "it2_centroids": {
+    "0": {
+      "study_hours_per_day": 5.481,
+      "sleep_hours": 7.024,
+      "exercise_frequency": 3.495,
+      "leisure_screen_share": 0.365
+    },
+    "1": {
+      "study_hours_per_day": 2.53,
+      "sleep_hours": 7.017,
+      "exercise_frequency": 3.535,
+      "leisure_screen_share": 0.597
+    }
+  },
+  "it2_sizes": {
+    "0": 35730,
+    "1": 28270
+  },
+  "it2_ari_it1_vs_it2": 0.03388048859541548,
+  "it2_gaps": [
+    {
+      "label": "Prior GPA, % scale (train)",
+      "est": 4.50508,
+      "lo": 4.33375,
+      "hi": 4.67944,
+      "welch_t": 48.6244,
+      "welch_p": 0.0,
+      "mwu_p": 0.0,
+      "cohens_d": 0.39653
+    },
+    {
+      "label": "Raw score (train)",
+      "est": 4.2171,
+      "lo": 4.03358,
+      "hi": 4.40656,
+      "welch_t": 45.38601,
+      "welch_p": 0.0,
+      "mwu_p": 0.0,
+      "cohens_d": 0.37009
+    },
+    {
+      "label": "Raw score (test)",
+      "est": 4.13758,
+      "lo": 3.77768,
+      "hi": 4.48285,
+      "welch_t": 22.14726,
+      "welch_p": 0.0,
+      "mwu_p": 0.0,
+      "cohens_d": 0.36191
+    },
+    {
+      "label": "GPA-adjusted (train)",
+      "est": 0.01423,
+      "lo": -0.04236,
+      "hi": 0.0806,
+      "welch_t": 0.42527,
+      "welch_p": 0.67064,
+      "mwu_p": 0.36522,
+      "cohens_d": 0.00342
+    },
+    {
+      "label": "GPA-adjusted (test)",
+      "est": -0.00654,
+      "lo": -0.13386,
+      "hi": 0.12766,
+      "welch_t": -0.09695,
+      "welch_p": 0.92276,
+      "mwu_p": 0.72389,
+      "cohens_d": -0.00156
+    },
+    {
+      "label": "GPA-adjusted, GPA < 4.0 (test)",
+      "est": 0.01099,
+      "lo": -0.18755,
+      "hi": 0.20191,
+      "welch_t": 0.11023,
+      "welch_p": 0.91223,
+      "mwu_p": 0.49193,
+      "cohens_d": 0.00225
+    }
+  ],
+  "it2_within_band_test": [
+    {
+      "band": "Below 80",
+      "n": 3491,
+      "raw": 2.5316,
+      "raw_lo": 2.017,
+      "raw_hi": 3.0611,
+      "adj": -0.0125,
+      "adj_lo": -0.3437,
+      "adj_hi": 0.3109,
+      "gpa_gap": 0.1024
+    },
+    {
+      "band": "80-90",
+      "n": 3013,
+      "raw": -0.112,
+      "raw_lo": -0.5293,
+      "raw_hi": 0.3221,
+      "adj": -0.0748,
+      "adj_lo": -0.449,
+      "adj_hi": 0.3156,
+      "gpa_gap": -0.0017
+    },
+    {
+      "band": "90-99",
+      "n": 3061,
+      "raw": 0.1464,
+      "raw_lo": -0.1802,
+      "raw_hi": 0.5075,
+      "adj": 0.0912,
+      "adj_lo": -0.2432,
+      "adj_hi": 0.4142,
+      "gpa_gap": 0.0024
+    },
+    {
+      "band": "Elite (4.0)",
+      "n": 6435,
+      "raw": -0.0918,
+      "raw_lo": -0.2472,
+      "raw_hi": 0.0486,
+      "adj": -0.0918,
+      "adj_lo": -0.2366,
+      "adj_hi": 0.0524,
+      "gpa_gap": 0.0
+    }
+  ],
+  "it2_gbm_test_r2": {
+    "Exam score": 0.0701,
+    "Prior GPA": 0.0797,
+    "GPA-adjusted score": -0.0004
+  },
+  "it2_gbm_perm_importance": {
+    "Prior GPA": {
+      "study_hours_per_day": 0.1244,
+      "sleep_hours": 0.0187,
+      "exercise_frequency": 0.0192,
+      "leisure_screen_share": 0.0019
+    },
+    "GPA-adjusted score": {
+      "study_hours_per_day": 0.0006,
+      "sleep_hours": -0.0,
+      "exercise_frequency": 0.0001,
+      "leisure_screen_share": 0.0009
+    }
+  }
+}

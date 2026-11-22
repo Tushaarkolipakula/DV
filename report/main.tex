@@ -1,0 +1,74 @@
+% ===========================================================================
+% DAS732 A3 team report.  Compile from the report/ folder:
+%     pdflatex main.tex  &&  pdflatex main.tex      (run twice for references)
+% Overleaf: upload the whole repository (or at least report/, images/ and
+% reference/DV_Assignment1_report.pdf) and set main.tex as the main document.
+%
+% Status of each section
+%   01_introduction.tex      Advaya  (TODO)
+%   02_data_handling.tex     Tushaar (DONE)
+%   03_workflow.tex          Tushaar (DONE; diagram rows for M2/M3 to update)
+%   04_member1_tushaar.tex   Tushaar (DONE)
+%   05_member2_advaya.tex    Advaya  (TODO, structure provided)
+%   06_member3_aman.tex      Aman    (TODO, structure provided)
+%   07_synthesis.tex         Advaya + Aman (TODO, Tushaar's input provided)
+%   08_conclusions.tex       Advaya  (TODO)
+%   09_contributions.tex     all     (Tushaar row DONE)
+%   11_references.tex        all     (Tushaar references DONE; add yours)
+% Delete \todo{...} boxes as you fill sections. Search "TODO" to find them.
+% ===========================================================================
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=2.2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{booktabs,graphicx,amsmath,amssymb,float,rotating,pdfpages,xcolor}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{../}}   % image paths in the sections are relative to the repo root
+
+% Red TODO box: remove each one once its content is written.
+\newcommand{\todo}[1]{\leavevmode\par\noindent\fcolorbox{red}{red!5}{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\color{red!70!black}\textbf{TODO: }#1}}\par\medskip}
+
+% Inline red TODO for use inside captions.
+\DeclareRobustCommand{\todoi}[1]{{\color{red!70!black}\textbf{TODO:} #1}}
+
+% \teamfig{width}{path}{caption}{label}: includes the image if it exists,
+% otherwise draws a placeholder so the report always compiles.
+\newcommand{\teamfig}[4]{%
+  \begin{figure}[htbp]\centering
+  \IfFileExists{../#2}{\includegraphics[width=#1]{#2}}%
+    {\fcolorbox{red}{red!5}{\parbox[c][4cm][c]{0.8\linewidth}{\centering\color{red!70!black}missing image: \texttt{\detokenize{#2}}}}}%
+  \caption{#3}\label{#4}\end{figure}}
+
+\title{\textbf{Visual Analytics of Student Habits, Wellbeing and Performance}\\[4pt]
+\large DAS732 Data Visualization: Programming Assignment A3}
+\author{Kolipakula Sai Tushaar (BT2024022) \and Advaya Bhardwaj (BT2024231) \and Aman Kumar Lahoti (BT2024123)}
+\date{November 2026}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\clearpage
+
+\input{sections/01_introduction}
+\input{sections/02_data_handling}
+\input{sections/03_workflow}
+\clearpage
+\input{sections/04_member1_tushaar}
+\clearpage
+\input{sections/05_member2_advaya}
+\clearpage
+\input{sections/06_member3_aman}
+\clearpage
+\input{sections/07_synthesis}
+\input{sections/08_conclusions}
+\input{sections/09_contributions}
+\input{sections/11_references}
+
+\clearpage
+\appendix
+\section{Appendix: A1 Report}
+\label{app:a1}
+The A1 report is included for completeness, as the brief requires. It is not
+assessed as part of A3.
+\includepdf[pages=-,scale=0.92,pagecommand={\thispagestyle{plain}}]{../reference/DV_Assignment1_report.pdf}
+\end{document}

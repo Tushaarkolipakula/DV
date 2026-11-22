@@ -1,0 +1,99 @@
+{
+  "feature_groups": {
+    "habits": [
+      "study_hours_per_day",
+      "sleep_hours",
+      "exercise_frequency",
+      "attendance_percentage",
+      "social_media_hours",
+      "netflix_hours"
+    ],
+    "wellbeing": [
+      "stress_level",
+      "motivation_level",
+      "mental_health_rating",
+      "parental_support_level",
+      "social_activity",
+      "time_management_score"
+    ],
+    "background": [
+      "age",
+      "semester",
+      "family_income_range_code",
+      "parental_education_level_code",
+      "internet_quality_code",
+      "diet_quality_code",
+      "access_to_tutoring",
+      "part_time_job",
+      "extracurricular_participation"
+    ],
+    "prior": [
+      "previous_gpa"
+    ],
+    "targets": [
+      "exam_score",
+      "dropout_risk",
+      "performance_band"
+    ]
+  },
+  "one_hot_columns": [
+    "oh_gender_Female",
+    "oh_gender_Male",
+    "oh_gender_Other",
+    "oh_major_Arts",
+    "oh_major_Biology",
+    "oh_major_Business",
+    "oh_major_Computer Science",
+    "oh_major_Engineering",
+    "oh_major_Psychology",
+    "oh_study_environment_Cafe",
+    "oh_study_environment_Co-Learning Group",
+    "oh_study_environment_Dorm",
+    "oh_study_environment_Library",
+    "oh_study_environment_Quiet Room",
+    "oh_learning_style_Auditory",
+    "oh_learning_style_Kinesthetic",
+    "oh_learning_style_Reading",
+    "oh_learning_style_Visual"
+  ],
+  "removed_redundant": {
+    "exam_anxiety_score": "clip(15 - motivation_level, 5, 10)",
+    "study_hours_per_week": "7 x study_hours_per_day",
+    "leisure_screen_hours": "social_media_hours + netflix_hours"
+  },
+  "derived_flagged": {
+    "previous_gpa_pct": "previous_gpa / 4 x 100",
+    "performance_delta": "exam_score - previous_gpa_pct (target-derived)",
+    "performance_band": "binned exam_score (target-derived)",
+    "leisure_screen_share": "(social_media + netflix) / screen_time"
+  },
+  "leakage": {
+    "dropout_risk": "(stress_level > 8) & (motivation_level <= 3)",
+    "exam_score": [
+      "performance_band",
+      "performance_delta"
+    ]
+  },
+  "ceiling_flags": [
+    "score_at_ceiling",
+    "gpa_at_ceiling",
+    "both_at_ceiling"
+  ],
+  "gpa_band": {
+    "edges_pct": [
+      0,
+      80,
+      90,
+      99.999,
+      100
+    ],
+    "labels": [
+      "Below 80",
+      "80-90",
+      "90-99",
+      "Elite (4.0)"
+    ]
+  },
+  "seed": 42,
+  "test_size": 0.2
+}

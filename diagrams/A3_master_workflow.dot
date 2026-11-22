@@ -1,0 +1,78 @@
+// Team A3 master workflow: shared preprocessing, then three unrolled Keim diamonds.
+// Member 2 and Member 3 boxes describe the agreed plan: edit their labels once
+// their analysis is final, then re-render:
+//   dot -Tpng -Gdpi=170 A3_master_workflow.dot -o ../images/A3_master_workflow.png
+digraph A3 {
+  rankdir=LR; newrank=true; nodesep=0.25; ranksep=0.42; bgcolor="#fcfcfb"; pad=0.25;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=9.5,
+        color="#8a8985", fillcolor="white", penwidth=1.2, margin="0.10,0.06"];
+  edge [fontname="Helvetica", fontsize=8, color="#52514e", fontcolor="#52514e", penwidth=1.1];
+  label="A3 visual analytics workflow: shared preprocessing feeding three unrolled Keim diamonds (iteration 1 -> feedback loop -> iteration 2)";
+  labelloc=t; labeljust=l; fontname="Helvetica-Bold"; fontsize=13;
+
+  RAW [label="Raw CSV\n80,000 x 31", fillcolor="#eef4fc", color="#2a78d6"];
+  A1  [label="A1 preprocess.py\ntypes, 8 derived\nfields (43 cols)", fillcolor="#eef4fc", color="#2a78d6"];
+  A3P [label="preprocess_a3.py\ndrop 3 redundant cols\nleakage + ceiling flags\nGPA bands, one-hot\n80/20 stratified split", fillcolor="#eef4fc", color="#2a78d6", penwidth=2];
+  RAW -> A1 -> A3P;
+
+  // ---------------- Member 1 ----------------
+  subgraph cluster_m1 {
+    label="Member 1 - what students do (unsupervised: clustering)"; fontname="Helvetica-Bold"; fontsize=10.5;
+    style="rounded,dashed"; color="#2a78d6";
+    m1d [label="D1\n6 raw habits", fillcolor="#eef4fc", color="#2a78d6"];
+    m1v [label="V1\ncorrelation,\nPCA map", fillcolor="#fff4e5", color="#eda100"];
+    m1m [label="M1\nK-means / GMM\nvs shuffled null", fillcolor="#e8f7f1", color="#1baf7a"];
+    m1k [label="K1\nunstable clusters;\ngap = prior GPA", fillcolor="#f3f0fb", color="#6250d6"];
+    m1t [label="T\nrefined habits +\nGPA-adjusted score", fillcolor="#fdecec", color="#e34948", penwidth=2];
+    m1d2 [label="D2\n4 habits,\nadjusted target", fillcolor="#eef4fc", color="#2a78d6"];
+    m1m2 [label="M2\nK-means k=2\n+ GBM check", fillcolor="#e8f7f1", color="#1baf7a"];
+    m1v2 [label="V2\nraw vs adjusted\ngap, by band", fillcolor="#fff4e5", color="#eda100"];
+    m1k2 [label="K2\n+4.2 raw -> 0.0\nadjusted", fillcolor="#f3f0fb", color="#6250d6"];
+    m1d -> m1v -> m1m -> m1k;
+    m1k -> m1t [label="Feedback loop", color="#e34948", fontcolor="#e34948", penwidth=2.4, fontname="Helvetica-Bold"];
+    m1t -> m1d2 [color="#e34948"];
+    m1d2 -> m1m2 -> m1v2 -> m1k2;
+  }
+
+  // ---------------- Member 2 ----------------
+  subgraph cluster_m2 {
+    label="Member 2 - what students feel (supervised: classification of dropout risk)"; fontname="Helvetica-Bold"; fontsize=10.5;
+    style="rounded,dashed"; color="#eb6834";
+    m2d [label="D1\nall features,\n2% positives", fillcolor="#eef4fc", color="#2a78d6"];
+    m2m [label="M1\nlogistic, tree,\nrandom forest", fillcolor="#e8f7f1", color="#1baf7a"];
+    m2v [label="V1\nPR / ROC, tree,\nimportance", fillcolor="#fff4e5", color="#eda100"];
+    m2k [label="K1\nnear-perfect:\nlabel leakage", fillcolor="#f3f0fb", color="#6250d6"];
+    m2t [label="T\nremove stress,\nmotivation; weights", fillcolor="#fdecec", color="#e34948", penwidth=2];
+    m2d2 [label="D2\nleak-free\nfeatures", fillcolor="#eef4fc", color="#2a78d6"];
+    m2m2 [label="M2\nretrain\nclassifiers", fillcolor="#e8f7f1", color="#1baf7a"];
+    m2v2 [label="V2\nPR before /\nafter", fillcolor="#fff4e5", color="#eda100"];
+    m2k2 [label="K2\n(fill in)", fillcolor="#f3f0fb", color="#6250d6"];
+    m2d -> m2m -> m2v -> m2k;
+    m2k -> m2t [label="Feedback loop", color="#e34948", fontcolor="#e34948", penwidth=2.4, fontname="Helvetica-Bold"];
+    m2t -> m2d2 [color="#e34948"];
+    m2d2 -> m2m2 -> m2v2 -> m2k2;
+  }
+
+  // ---------------- Member 3 ----------------
+  subgraph cluster_m3 {
+    label="Member 3 - who students are (supervised: regression + statistical tests)"; fontname="Helvetica-Bold"; fontsize=10.5;
+    style="rounded,dashed"; color="#1baf7a";
+    m3d [label="D1\nall features,\nraw score", fillcolor="#eef4fc", color="#2a78d6"];
+    m3m [label="M1\nOLS + gradient\nboosting", fillcolor="#e8f7f1", color="#1baf7a"];
+    m3v [label="V1\nresiduals,\nimportance", fillcolor="#fff4e5", color="#eda100"];
+    m3k [label="K1\nGPA dominates;\nceiling at 100", fillcolor="#f3f0fb", color="#6250d6"];
+    m3t [label="T\ncensoring fix;\nresidual target", fillcolor="#fdecec", color="#e34948", penwidth=2];
+    m3d2 [label="D2\ncensor-aware\ntarget", fillcolor="#eef4fc", color="#2a78d6"];
+    m3m2 [label="M2\nrefit + ANOVA\nincome x tutoring", fillcolor="#e8f7f1", color="#1baf7a"];
+    m3v2 [label="V2\ncoefficient\nforest plot", fillcolor="#fff4e5", color="#eda100"];
+    m3k2 [label="K2\n(fill in)", fillcolor="#f3f0fb", color="#6250d6"];
+    m3d -> m3m -> m3v -> m3k;
+    m3k -> m3t [label="Feedback loop", color="#e34948", fontcolor="#e34948", penwidth=2.4, fontname="Helvetica-Bold"];
+    m3t -> m3d2 [color="#e34948"];
+    m3d2 -> m3m2 -> m3v2 -> m3k2;
+  }
+
+  SYN [label="SYNTHESIS\none story across\nthree strands", fillcolor="#f3f0fb", color="#6250d6", penwidth=2];
+  A3P -> m1d; A3P -> m2d; A3P -> m3d;
+  m1k2 -> SYN; m2k2 -> SYN; m3k2 -> SYN;
+}
