@@ -1,60 +1,54 @@
-# Member 1 (Tushaar): viva notes and video script
+# Tushaar's viva and video notes
 
-## The story in four sentences
+**Question.** When students are grouped by their habits alone, how large is the exam-score difference between the profiles, and how much remains after accounting for the groups' different prior GPAs?
 
-I clustered students on their habits to see whether "good-habit" profiles exist and whether they help in the exam beyond prior GPA. On the six raw habits there are no real clusters: the silhouette equals shuffled data and partitions change with the seed, and the small 2-point score gap follows prior GPA. That inference drove the feedback loop: I rebuilt the feature space (leisure share instead of raw leisure hours, dropped attendance) and replaced the raw score with a GPA-adjusted score. In iteration 2 a stable study-focused vs leisure-heavy split appears with a 4.2-point raw advantage, but that advantage is exactly its prior-GPA advantage and is 0.0 points (CI ±0.13) once GPA is held fixed, on the unseen test split too.
+The [captioned demo segment](Member1_habits_demo.mp4) runs about 2 minutes 11 seconds. It follows the question from the pooled profiles through the GPA composition check, the band refits and the GMM sensitivity result. The guide below gives a longer spoken version for the live demo or a voice-over with additional figure pauses.
 
-## Numbers to know by heart
+## Three-minute recording guide
 
-| What | Value |
-|---|---|
-| Max correlation between any two raw habits | 0.007 |
-| Iteration 1 silhouette (k=4), real vs shuffled | 0.117 vs 0.116 |
-| Iteration 1 seed stability (k=4) | ARI 0.24 |
-| Iteration 1 score gap / effect size | 2.0 pts, eta² = 0.0028 |
-| Iteration 2 stability (k=2) | ARI 0.99, silhouette 0.233 vs null 0.194 |
-| Cluster centroids | 5.5 vs 2.5 study h/day; leisure share 37% vs 60% |
-| Raw score gap (train / test) | +4.22 / +4.14, d = 0.37 / 0.36 |
-| GPA-adjusted gap (test) | -0.01, 95% CI [-0.13, +0.13], p = 0.92 |
-| GPA bins alone explain | R² = 0.870 of test score |
-| GBM habits -> score / GPA / adjusted (test R²) | 0.070 / 0.080 / 0.000 |
-| Students at GPA 4.0, of which score 100 | 39.9%, 53.6% |
+| Time | Show | What to explain |
+|---|---|---|
+| 0:00–0:25 | [Member workflow](../images/M1_workflow_unrolled.png) | A1 found that daily study hours correlated with exam score at 0.24, while prior GPA correlated at 0.93. I wanted to know whether a combination of habits still distinguished scores among students with similar starting points. |
+| 0:25–0:55 | [Elbow and silhouette](../images/M1_gpa_selection.png), [pooled PCA](../images/M1_gpa_pca_global.png) | I clustered five numeric habits and one categorical study environment. I used 64,000 training students to fit the scaling and models. The elbow suggested three groups, but the silhouette peaked at two. The value of 0.159 shows substantial overlap. K-means and the mixture agreed fairly closely overall, at ARI 0.73. |
+| 0:55–1:25 | [Pooled average habits](../images/M1_gpa_profiles_global.png), [score boxes](../images/M1_gpa_scores_global.png) | On the 16,000 held-out students, the higher-study group averaged 5.46 study hours and 37% leisure screen time, compared with 2.52 hours and 60%. It scored 91.02 rather than 86.86. The rank test detects the difference, but its effect size is only 0.025. Point to the overlap in the boxes. |
+| 1:25–1:55 | [GPA composition](../images/M1_gpa_mix.png), then the **Feedback loop** edge on the workflow | In the higher-study cluster, 46% entered with a perfect GPA. In the lower-study cluster it was 32%. I gave the same two clusters a common GPA-band mix. Their 4.15-point gap fell to 0.51. That prompted me to fit a new pair of models inside each of the four bands. |
+| 1:55–2:25 | [Within-band PCA](../images/M1_gpa_pca_bands.png), [habit profiles](../images/M1_gpa_profiles_bands.png), [score boxes](../images/M1_gpa_scores_bands.png) | I repeated scaling, selection, model fitting and plotting using each band's training students. K-means still separated higher and lower study time. The lowest band retained a 2.01-point gap. In each of the other three bands the estimate was within 0.20 points of zero. In the GPA-4.0 band both cluster medians reached 100. |
+| 2:25–3:00 | [Contrasts and intervals](../images/M1_gpa_gaps.png) and [GMM profiles by band](../images/M1_gpa_profiles_gmm_bands.png) | With the band-specific labels, the weighted K-means gap was 0.41 points. The mixture gave −0.35. In the lowest GPA band the mixture split dormitory and café students from the other environments. Its two groups differed by only a quarter hour of average study time. Both algorithms agree that most of the pooled score gap tracks prior GPA. What remains depends on which profile we compare. |
 
-## Likely viva questions
+## Numbers to check against the figures
 
-**Why K-means and not DBSCAN or hierarchical?** 64,000 rows rule out hierarchical clustering (O(n²) memory). DBSCAN needs density gaps, and Fig 1-2 show there are none in D1. K-means plus a GMM BIC check covers spherical and elliptical groups. The point of iteration 1 was to test whether any structure exists, and the shuffled null answers that whatever the algorithm.
+All score contrasts are mean exam points, higher-study cluster minus lower-study cluster. Labels are ordered by training mean study time. Intervals resample held-out students within bands and condition on the fitted models.
 
-**What is the shuffled null?** Each column is permuted on its own. That keeps every variable's distribution but breaks any relation between variables. If real data clusters no better than that, the clusters come from the marginal shapes, not from students sharing a pattern.
+| Comparison | K-means, 95% CI | GMM, 95% CI |
+|---|---|---|
+| All held-out students, global labels | 4.15 [3.81, 4.52] | 4.19 [3.81, 4.56] |
+| Same labels, common GPA mix | 0.51 [0.35, 0.69] | 0.49 [0.32, 0.65] |
+| New labels within each band, weighted across bands | 0.41 [0.24, 0.58] | −0.35 [−0.52, −0.19] |
+| Lowest GPA band, new labels | 2.01 [1.46, 2.53] | −1.54 [−2.08, −1.01] |
 
-**What is ARI stability?** Run K-means six times with different seeds and one start each; adjusted Rand index measures how often pairs of students land together across runs. 1 means identical partitions, 0 means chance agreement.
+## Questions to rehearse
 
-**Why is ARI 0.00 at k=2 in iteration 1?** The cloud is round, so every direction is an equally good cut and each seed picks a different one.
+**What exactly changed in the feedback loop?** The cluster-by-GPA table showed unequal starting attainment. I split the modelling population by prior GPA and fitted new scalers, K-means, GMM and PCA inside each band. Every student has one global assignment and one assignment from their own band's model. The four local fits all selected two clusters, but the label identities can change.
 
-**Isn't choosing features after seeing them "cheating"?** T1 used two things: the cluster profiles (which variables K-means split on) and A1's finding that the leisure *share*, not raw hours, relates to performance. That is the human-in-the-loop step the diamond model describes. The test of T1 is not the score; it is that the new space has stable structure (ARI 0.99) that beats the null, which the raw space did not.
+**What do the two GPA comparisons measure?** Holding global labels fixed isolates the association with composition across the four bands. The K-means gap fell by 3.64 points, or about 88%. Refitting measures something else. It asks whether the profiles found among students of similar prior attainment differ in score. I combine the four local differences using each band's share of the test set.
 
-**Why did the refined space cluster when the raw one didn't?** Leisure share and study hours correlate at -0.64, partly by construction because screen time includes study time. That correlation creates a real axis (study-dominant vs leisure-dominant screen use). I mention this openly in the report.
+**Which habits went into clustering?** Daily study hours, sleep, weekly exercise, leisure screen share and attendance, plus one-hot study environment. I standardize each numeric field using training values. I center the environment indicators and scale them as a block, giving one original categorical variable the same total variance as one numeric input. Scores only enter the later comparisons. Prior GPA only defines the bands.
 
-**Why bin-mean adjustment instead of regression residuals?** The score–GPA relation bends at the top because of the 100 ceiling. Bins of 0.1 GPA follow any shape without assuming one. Means are learned on train only and applied to test, so there is no leakage.
+**Why two clusters if the elbow is at three?** Both plots carry information. The rule admits candidate values within 0.01 of the best silhouette and then prefers the candidate nearest the elbow. The pooled silhouette was 0.159 at two and 0.134 at three, so three missed the tolerance. These are descriptive profiles with overlap.
 
-**What about the ceiling?** 40% have GPA 4.0, and over half of those score 100, so their adjusted score is capped. I repeated the test without them: gap +0.01, CI [-0.19, +0.20].
+**Why can the algorithms disagree?** K-means groups students by distance to centroids. A diagonal Gaussian mixture allows different spreads along each axis. It can lock onto the encoded environment categories. This happened in the lowest band, where the algorithms' ARI was 0.004. The mixture's higher-study cluster was entirely café/dorm students. Other environments made up the other cluster. Compare their study means of 3.52 and 3.27 hours with the K-means means of 4.60 and 1.85 hours.
 
-**Why does the Below-80 band still show 2.5 points?** That band spans GPA 1.64 to 3.20. Inside it, study-focused students have GPA 0.10 higher, worth about 2.4 points at roughly 24 exam points per GPA unit in that range. After fine adjustment the gap is -0.01.
+**What does the score test show?** Kruskal–Wallis compares score ranks and corrects for tied values such as 100. The pooled K-means test had H = 393.46 with one degree of freedom and a rank effect size of 0.0245. In each algorithm only the lowest GPA band retained a significant difference after Holm adjustment across its four band tests. The bootstrap intervals report the size and direction of the mean differences in exam points.
 
-**Does this mean studying doesn't matter?** No. It means this dataset can't separate habits from prior attainment. Habits predict prior GPA (R² 0.08) as well as the exam (0.07). Prior GPA comes before the exam, and the habits are measured once, so the defensible reading is that habits travel with a student's long-run trajectory. The data is cross-sectional and supports no causal claim either way.
+**Why avoid a causal claim?** Each student contributes one observation. Broad GPA bands still admit different prior GPAs within them, prior GPA and scores have upper bounds, and the profile definitions change after refitting. The results describe these students at the recorded time. They cannot estimate how changing a habit would affect the same student's score.
 
-**What's the "correctness w.r.t. time" point?** Prior GPA precedes the exam, so it can be a cause of the exam score or share causes with it, but not the reverse. Habits are a single snapshot, so we cannot order them relative to prior GPA.
+## Live demo
 
-**How does this connect to the team?** Same confound as A1's Fig 19 partial correlations, now shown with a different method (clustering + adjustment) and confirmed on a held-out split. The Below-80 result also suggests re-checking A1 Fig 20 with fine-grained adjustment.
+From the repository root, run the shared preprocessing and then the assigned analysis:
 
-## Video script (about 3 minutes, one slide per line)
+~~~bash
+python preprocess_a3.py
+python Member1/m1_habits_by_gpa.py
+~~~
 
-1. **Workflow slide (M1_workflow_unrolled.png).** "My strand asks whether students form habit profiles and whether a good profile helps beyond prior GPA. Here is my diamond, unrolled: iteration one on the top row, the feedback loop in red, iteration two below."
-2. **Fig 1.** "The six raw habits don't correlate with each other at all, and three of them don't correlate with the score."
-3. **Fig 2.** "K-means finds no preferred k, and the silhouette sits exactly on the shuffled-data line. Different seeds give different clusters."
-4. **Fig 3 + Fig 4.** "The four clusters slice one round cloud along exercise and leisure hours, never study hours. They differ by two points, with eta-squared of 0.003."
-5. **Fig 5.** "The lower clusters just hold more low-GPA students. Inside a GPA band the gap almost disappears."
-6. **Workflow slide, red edge.** "That inference is my feedback loop. I transform the features, swapping raw leisure hours for leisure share and dropping attendance, and I transform the target into a GPA-adjusted score, learned on train only. I also flag the GPA-4.0 ceiling."
-7. **Fig 6 + Fig 7.** "Now k equals two is stable, ARI 0.99, and beats the null. The clusters are study-focused, five and a half hours a day, and leisure-heavy, two and a half."
-8. **Fig 8.** "Study-focused students score 4.2 points higher. They also arrive with 4.5 points more prior GPA. Hold GPA fixed and the gap is zero, on the test set and without the ceiling group."
-9. **Fig 9.** "Even the 2.5-point gap in the lowest band is GPA spread inside that band."
-10. **Fig 10 + close.** "A gradient-boosting check agrees: habits predict prior GPA, not the exam beyond it. Habits mark a student's trajectory; this data shows no exam-specific benefit."
+Open the [score contrasts](outputs/gpa_gaps.csv), [rank tests](outputs/gpa_score_tests.csv) and [profile means](outputs/gpa_profiles.csv) alongside the figures if asked to trace a number. The A1 background is in Figures 2, 3 and 8 of the [A1 report](../reference/DV_Assignment1_report.pdf).

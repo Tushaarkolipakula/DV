@@ -1,58 +1,67 @@
-% ---------------------------------------------------------------------------
-% Shared section: A3 data handling (written by Kolipakula Sai Tushaar).
-% DONE - no edits needed. Compiled through report/main.tex.
-% ---------------------------------------------------------------------------
-\section{A3 Data Handling}
+\section{Shared A3 preprocessing}
 \label{sec:a3-prep}
 
-A3 starts from \texttt{master\_cleaned.csv}, the output of the A1 pipeline
-(80{,}000 rows, 43 columns, no nulls or duplicates; see the A1 report in the Appendix). The script
-\texttt{preprocess\_a3.py} adds eight steps that the A3 models need and that A1
-did not. Every step asserts its own precondition, so the script fails loudly
-if the input ever changes. It writes one shared table, \texttt{a3\_base.csv.gz},
-which all three members load through \texttt{a3\_common.load\_base()} so that
-every analysis uses the same features, split and colours.
+The A1 pipeline produced a table of 80,000 students with 43 columns. A3 starts
+from the compressed copy of that table and keeps its student identifiers.
+The A1 table contains the habit measurements, prior attainment and exam
+outcome needed here, so no supplementary dataset is needed. The preprocessing
+script writes one common table and records its feature definitions in
+\texttt{data/a3\_feature\_groups.json}.
 
-\begin{enumerate}
-  \item \textbf{Re-validation.} Schema, null, duplicate and range checks on 14
-        numeric columns are repeated before any modelling.
-  \item \textbf{Exact redundancies removed.} Three columns are formulas of
-        others for every row and would double-weight one variable in a
-        distance-based or linear model:
-        \begin{itemize}
-          \item \texttt{exam\_anxiety\_score} $=\mathrm{clip}(15-\text{motivation},5,10)$;
-          \item \texttt{study\_hours\_per\_week} $=7\times$ daily study hours;
-          \item \texttt{leisure\_screen\_hours} $=$ social media $+$ streaming hours.
-        \end{itemize}
-  \item \textbf{Leakage recorded.} \texttt{dropout\_risk} equals
-        $(\text{stress}>8)\wedge(\text{motivation}\le 3)$ for all rows
-        (A1 report, Fig.~21), and \texttt{performance\_band} and
-        \texttt{performance\_delta} are functions of the exam score. These
-        rules are stored in \texttt{a3\_feature\_groups.json} so no model uses
-        them as features by mistake.
-  \item \textbf{Ceiling flags.} 25.8\% of students score exactly 100 and
-        40.0\% have a prior GPA of exactly 4.0; 21.4\% are at both caps. Both
-        variables are censored, which matters for any residual or linear model.
-  \item \textbf{Prior-attainment bands.} \texttt{gpa\_band} on
-        \texttt{previous\_gpa\_pct}: Below 80 (17{,}487 students, mean score
-        71.7), 80--90 (15{,}154; 85.2), 90--99 (15{,}390; 94.4) and Elite, GPA
-        exactly 4.0 (31{,}969; 98.0).
-  \item \textbf{Outlier screen.} The $1.5\times$IQR rule flags 0.25--0.45\% of
-        values in five columns. All lie inside the instrument ranges, so they
-        are kept as genuine tail values.
-  \item \textbf{Encoding.} Booleans become 0/1; four nominal columns (gender,
-        major, study environment, learning style) become 18 one-hot columns;
-        ordinal columns keep their A1 integer codes.
-  \item \textbf{Train/test split.} 80/20, stratified on performance band
-        $\times$ dropout flag, seed 42. Train: 64{,}000 rows, mean score 89.13,
-        dropout rate 1.98\%; test: 16{,}000 rows, 89.19, 1.98\%.
-\end{enumerate}
+\paragraph{Validation and redundancy.}
+The script checks missing values, duplicate rows, duplicate student IDs and
+numeric ranges. It verifies three identities on every record before removing
+the redundant columns. Exam anxiety equals $\min(10,\max(5,15-\mathrm{motivation}))$,
+weekly study hours equal seven times daily study hours, and leisure screen
+hours equal social media plus streaming hours. Keeping both copies would
+give the corresponding measurements extra influence on distances. The
+leisure \emph{share} remains available because it measures the fraction
+of screen time spent on leisure. An interquartile-range screen flags
+0.25--0.45\% of values in five columns. These observations pass the recorded
+range checks and are retained.
 
-\paragraph{Supplementary data.} None is used. Every question in A3 can be
-answered from the A1 dataset itself, and the strongest explanatory variable,
-prior GPA, is already in it. The VAST 2026 Challenge material mentioned in the
-brief was not used.
+\paragraph{Outcome-derived fields and ceilings.}
+The dropout flag exactly matches stress $>8$ together with motivation $\leq3$
+(A1, Fig.~21). The performance band and the difference between exam score
+and prior GPA on a percentage scale also use the outcome. The feature
+metadata records these dependencies. In the full dataset, 25.8\% of scores
+equal 100, 40.0\% of GPAs equal 4.0 and 21.4\% of students reach both
+bounds. The flags retain these observations so that compressed score
+differences can be interpreted separately.
 
-Scaling is deliberately left out of the shared file. Each member fits the
-scaler on the training split inside their own pipeline, so no information from
-the test split reaches any model.
+\paragraph{Common split, encoding and scaling.}
+A fixed stratified split (seed 42) preserves the joint distribution of
+performance band and dropout flag. It assigns 64,000 students to training
+and 16,000 to testing. Both splits have a dropout rate of 1.98\%.
+The encoder learns the categories for gender, major, study environment and
+learning style from the training rows and applies that vocabulary to both
+splits. The 83-column shared table supplies 18 such indicators, binary features
+coded 0/1, and A1's integer codes for ordered categories.
+For 20 numeric model inputs the script also supplies standardized columns,
+$z=(x-\bar{x}_{\mathrm{train}})/s_{\mathrm{train}}$, with population
+standard deviations from the training split. Keeping the original columns
+beside these values allows teammates to present quantities in hours, days
+or score points. Each band-specific clustering fit in the second iteration
+estimates its transformation from the training rows in its own band.
+
+\paragraph{Prior-attainment groups.}
+Bands are defined before clustering using $100\times\mathrm{GPA}/4$.
+Table~\ref{tab:shared-bands} gives their boundaries and sizes in the full
+dataset. The data label \emph{Below 80} includes exactly 80.
+The broadest group permits substantial variation in prior GPA. The final
+group isolates the GPA ceiling.
+
+\begin{table}[htbp]\centering\small
+\caption{Prior attainment and mean exam score in the shared input table.}
+\label{tab:shared-bands}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Data label & Prior GPA & Students & Mean exam score \\
+\midrule
+Below 80 & $\leq 3.20$ & 17,487 & 71.7 \\
+80--90 & $(3.20,3.60]$ & 15,154 & 85.2 \\
+90--99 & $(3.60,4.00)$ & 15,390 & 94.4 \\
+Elite (4.0) & $4.00$ & 31,969 & 98.0 \\
+\bottomrule
+\end{tabular}
+\end{table}

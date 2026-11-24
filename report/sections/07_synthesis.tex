@@ -5,23 +5,21 @@
 \label{sec:synthesis}
 
 \paragraph{From the clustering strand (Section~\ref{sec:m1}).}
-Students do form one stable habit split, study-focused against leisure-heavy
-screen use, and the study-focused group scores 4.2 points higher. The same
-group arrives with a higher prior GPA, and once prior GPA is held fixed the
-gap is zero ($-0.01$ points, 95\% CI $\pm0.13$, test split). Habits travel
-with a student's long-run attainment and add nothing exam-specific. The
-analysis also showed that four broad GPA bands are too coarse to remove the
-confound inside the lowest band, so any ``effect within the low-GPA band''
-must be checked with a finer adjustment.
+The global K-means profiles differ by 4.15 exam points on the test set.
+The higher-study profile contains more students who entered with a GPA of
+4.0. Giving the two global clusters a common prior-GPA band distribution
+reduces the difference to 0.51 points. Fitting new models in each band
+yields a pooled contrast of 0.41 points for K-means and $-0.35$ for GMM.
+The two models separate different habits in the lowest band. This limits
+what the remaining contrast can tell us about a change in study time.
 
 \todo{Add one paragraph each for the classification strand
 (Section~\ref{sec:m2}) and the regression strand (Section~\ref{sec:m3}), in the
 same style: what was found, the key number, what it means.}
 
-\todo{Then one closing paragraph that joins the three. Expected shape: all
-three strands meet at prior GPA. Habits (M1) and tutoring (M3) look like levers
-only because they travel with prior attainment, and the dropout flag (M2) is a
-definition built on two wellbeing scores, with prior GPA acting as a proxy for
-one of them. Compare against A1's conclusion (Appendix, Section~8): A3 confirms
-it with three independent methods and a held-out test split, and corrects two
-A1 readings (the low-GPA-band motivation effect and tutoring as a lever).}
+\todo{Close by comparing the three strands against A1 Section~8 (Appendix).
+Distinguish the strong association with prior GPA from the smaller remaining
+differences: the habit contrast depends on the clustering method, the
+tutoring interpretation needs adjustment for attainment, and the dropout
+flag has an explicit definition. Use the final Member~2 and Member~3
+results to establish which earlier readings are supported.}

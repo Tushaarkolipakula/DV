@@ -49,11 +49,7 @@ Both variables are censored at the top. Linear models and residuals should exclu
 
 Flagged values are inside the instrument ranges checked in step 1, so they are genuine tail values and are kept.
 
-## 7. Encoding
-
-Booleans to 0/1; 4 nominal columns one-hot encoded into 18 `oh_*` columns; ordinal columns keep their A1 `*_code` integers.
-
-## 8. Train/test split
+## 7. Train/test split
 
 Stratified on performance band x dropout flag, seed 42, test share 20%.
 
@@ -61,3 +57,11 @@ Stratified on performance band x dropout flag, seed 42, test share 20%.
 |---|---|---|---|---|
 | test | 16,000 | 89.19 | 1.98% | 26.0% |
 | train | 64,000 | 89.13 | 1.98% | 25.7% |
+
+## 8. Encoding
+
+Booleans use 0/1. The training categories of 4 nominal fields define 18 `oh_*` indicators. Unseen categories map to all zeros in their field. Ordinal fields retain their A1 integer codes.
+
+## 9. Numeric scaling
+
+For 20 numeric predictors, `z_*` is (value − training mean) / training population SD. Both splits use the same fitted parameters; a constant training column has scale 1. Original units and 0/1 indicators are also available. For a within-band fit, estimate the transform again using only that band's training rows.

@@ -67,6 +67,19 @@ class TestBaseTable(unittest.TestCase):
             cols = [c for c in oh if c.startswith(prefix + "_")]
             self.assertTrue((self.df[cols].sum(axis=1) == 1).all(), prefix)
 
+    def test_scaling_uses_only_training_students(self):
+        params = self.meta["standardization"]
+        train = self.df.loc[self.df["split"] == "train"]
+        numeric = list(params["mean"])
+        self.assertTrue(set(self.meta["habit_clustering"]["numeric"]).issubset(numeric))
+        self.assertTrue({"exam_score", "dropout_risk", "performance_delta"}.isdisjoint(numeric))
+        train_mu = train[numeric].mean()
+        train_sd = train[numeric].std(ddof=0).replace(0, 1)
+        np.testing.assert_allclose([params["mean"][c] for c in numeric], train_mu)
+        np.testing.assert_allclose([params["scale"][c] for c in numeric], train_sd)
+        expected = (self.df[numeric] - train_mu) / train_sd
+        np.testing.assert_allclose(self.df[[f"z_{c}" for c in numeric]], expected, atol=1e-12)
+
 
 class TestMember1Results(unittest.TestCase):
     @classmethod

@@ -1,43 +1,37 @@
-// Member 1 visual analytics workflow, Keim et al. diamond unrolled over two iterations.
-// Render:  dot -Tpng -Gdpi=200 M1_workflow_unrolled.dot -o ../images/M1_workflow_unrolled.png
+// Render from the repo root with Graphviz:
+// dot -Tpng -Gdpi=180 diagrams/M1_workflow_unrolled.dot -o images/M1_workflow_unrolled.png
+// dot -Tpdf diagrams/M1_workflow_unrolled.dot -o diagrams/M1_workflow_unrolled.pdf
 digraph M1 {
-  rankdir=TB; newrank=true; splines=spline; nodesep=0.45; ranksep=0.45;
-  bgcolor="#fcfcfb"; pad=0.25;
-  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10,
-        color="#8a8985", fillcolor="white", penwidth=1.2, margin="0.14,0.08"];
-  edge [fontname="Helvetica", fontsize=8.5, color="#52514e", fontcolor="#52514e", penwidth=1.2];
-  label="Member 1 (Kolipakula Sai Tushaar): habit profiles - Keim visual analytics diamond, unrolled into two iterations";
-  labelloc=t; labeljust=l; fontname="Helvetica-Bold"; fontsize=13;
+  graph [newrank=true, pad=.20, nodesep=.24, ranksep=.34, bgcolor="white", fontname="Arial",
+         label="Do habit clusters retain a score gap within prior-GPA bands?", labelloc=t, fontsize=19];
+  node [shape=box, style="rounded,filled", fontname="Arial", fontsize=11,
+        color="#A9B8C4", fillcolor="#F5F8FA", margin=".13,.10"];
+  edge [fontname="Arial", fontsize=10, color="#496175", arrowsize=.72];
 
-  subgraph cluster_it1 {
-    label="Iteration 1"; fontname="Helvetica-Bold"; fontsize=11; style="rounded,dashed"; color="#b9b8b3";
-    D1 [label="DATA D1\nTrain split (64,000)\n6 raw habits, z-scored\ntarget: raw exam score", fillcolor="#eef4fc", color="#2a78d6"];
-    V1 [label="VISUALIZE\nFig 1 correlation matrix\n(habits uncorrelated,\n|r| < 0.01)", fillcolor="#fff4e5", color="#eda100"];
-    M1 [label="MODEL\nK-means k=2..8, GMM BIC,\nsilhouette vs shuffled null,\nseed ARI, Hopkins\n(Fig 2)", fillcolor="#e8f7f1", color="#1baf7a"];
-    V1b [label="VISUALIZE MODEL\nFig 3 PCA map + centroids\nFig 4 score by cluster\nFig 5 cluster x GPA band", fillcolor="#fff4e5", color="#eda100"];
-    K1 [label="KNOWLEDGE K1\n- no natural clusters\n  (sil = null, ARI 0.2)\n- splits on exercise and\n  leisure hours, not study\n- 2-pt gap follows prior GPA", fillcolor="#f3f0fb", color="#6250d6"];
-    D1 -> V1 [label="mapping"];
-    V1 -> M1 [label="model\nbuilding"];
-    M1 -> V1b [label="model\nvisualization"];
-    V1b -> K1 [label="inference"];
-    V1b -> M1 [label="parameter\nrefinement (k)", style=dashed, constraint=false];
-    {rank=same; D1; V1; M1; V1b; K1;}
+  subgraph cluster1 {
+    label="Iteration 1   ·   All students"; color="#9CB5C6"; style=rounded; margin=11;
+    fontname="Arial Bold"; fontsize=14;
+    d1 [label="DATA\n\n64,000 training students.\nStandardize five numeric habits.\nEncode and weight study environment.\nReserve 16,000 students for testing."];
+    m1 [label="MODEL\n\nSelect K-means k with training elbow\nand silhouette curves. Fit a GMM\nwith the same k. Train PCA for\na two-dimensional view."];
+    v1 [label="VISUALIZE AND TEST\n\nPlot PCA, mean habit profiles and score\nboxes for held-out labels. Test scores\nwith Kruskal–Wallis and an effect size.\nTabulate cluster × prior-GPA band."];
+    {rank=same; d1; m1; v1;}
+    d1 -> m1 -> v1;
   }
-
-  T [label="TRANSFORM\nT1 features: drop attendance,\nsocial, streaming; add\nleisure share  -> 4 habits\nT2 target: score - mean(score | GPA bin)\n(bins fit on train)\nT3 flag GPA = 4.0 ceiling", fillcolor="#fdecec", color="#e34948", penwidth=2];
-
-  subgraph cluster_it2 {
-    label="Iteration 2"; fontname="Helvetica-Bold"; fontsize=11; style="rounded,dashed"; color="#b9b8b3";
-    D2 [label="DATA D2\n4 refined habits\ntargets: raw + GPA-adjusted\ntrain + held-out test", fillcolor="#eef4fc", color="#2a78d6"];
-    M2 [label="MODEL\nK-means re-selected (Fig 6)\nk=2, ARI 0.99\n+ gradient boosting check", fillcolor="#e8f7f1", color="#1baf7a"];
-    V2 [label="VISUALIZE\nFig 7 refined clusters\nFig 8 raw vs adjusted gap\nFig 9 within-band gaps\nFig 10 R² + importance", fillcolor="#fff4e5", color="#eda100"];
-    K2 [label="KNOWLEDGE K2\nStudy-focused cluster:\n+4.2 raw, +0.0 adjusted.\nHabits mark the prior-GPA\ntrajectory, add nothing\nto this exam beyond it", fillcolor="#f3f0fb", color="#6250d6"];
-    D2 -> M2 [label="model\nbuilding"];
-    M2 -> V2 [label="model\nvisualization"];
-    V2 -> K2 [label="inference"];
-    {rank=same; D2; M2; V2; K2;}
+  k1 [label="INFERENCE   ·   Global K-means gap = +4.15 exam points. The higher-study cluster\nhas 46% GPA-4.0 students, versus 32% in the lower-study cluster.", fillcolor="#E5EFF6",color="#527895"];
+  v1 -> k1;
+  t [label="TRANSFORM   ·   Split train and test students into the same four prior-GPA bands.\nRefit the numeric scales, environment weights, PCA and both cluster models in each training band.",
+     fillcolor="#FFF1E8",color="#B95A30"];
+  k1 -> t [label="Feedback loop", fontname="Arial Bold", color="#AD4726", fontcolor="#AD4726",penwidth=2];
+  subgraph cluster2 {
+    label="Iteration 2   ·   Within each prior-GPA band"; color="#9CB5C6"; style=rounded; margin=11;
+    fontname="Arial Bold"; fontsize=14;
+    d2 [label="DATA AND MODEL\n\nKeep the same six habit inputs.\nUse each band's training curves to\nselect k (all four chose 2). Predict\nlabels for that band's test students."];
+    v2 [label="VISUALIZE AND TEST\n\nRepeat PCA, heatmaps and score boxes\nwithin each band. Measure rank effects\nand correct band tests for multiplicity.\nContrast local gaps and bootstrap CIs."];
+    k2 [label="INFERENCE\n\nWeighted K-means gap = +0.41 points\n(95% CI +0.24 to +0.58); GMM = −0.35.\nLocal labels depend on the model.\nNeither gap identifies a causal effect.",fillcolor="#E5EFF6",color="#527895"];
+    {rank=same; k2; v2; d2;}
+    k2 -> v2 -> d2 [dir=back];
   }
-
-  K1 -> T [label="FEEDBACK LOOP", color="#e34948", fontcolor="#e34948", penwidth=2.6, fontsize=10, fontname="Helvetica-Bold"];
-  T -> D2 [label="transformation", color="#e34948", fontcolor="#e34948", penwidth=2];
+  t -> d2;
+  d1 -> k2 [style=invis, weight=20];
+  m1 -> v2 [style=invis, weight=20];
 }

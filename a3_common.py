@@ -29,6 +29,13 @@ GPA_BAND_LABELS = ["Below 80", "80-90", "90-99", "Elite (4.0)"]
 # Nominal columns that get one-hot encoded.
 NOMINAL = ["gender", "major", "study_environment", "learning_style"]
 
+# Member 1's specified numeric habits accompany the study-environment indicators.
+# FEATURES["habits"] below remains the input list used by the earlier analyses.
+HABIT_NUMERIC = [
+    "study_hours_per_day", "sleep_hours", "exercise_frequency",
+    "leisure_screen_share", "attendance_percentage",
+]
+
 # Feature groups (raw, non-derived columns only; see preprocess_a3.py for why).
 FEATURES = {
     # What students do (Member 1)

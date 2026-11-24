@@ -13,11 +13,9 @@ Steps added on top of A1 preprocessing
   4. Flag ceiling effects (exam score = 100, GPA = 4.0) for censoring-aware work.
   5. Add prior-attainment band (gpa_band) used for stratified analysis.
   6. IQR outlier screen (flag and report, not drop: all values are in range).
-  7. Encode: booleans -> 0/1, nominal -> one-hot (oh_*), ordinals keep A1 codes.
-  8. Stratified 80/20 train/test split (seed 42) on performance band x dropout.
-
-Scaling is NOT applied here: each member fits the scaler on the training
-split inside their own pipeline so test data never leaks into it.
+  7. Stratified 80/20 train/test split (seed 42) on performance band x dropout.
+  8. Encode booleans and use the training vocabulary for one-hot indicators.
+  9. Fit numeric z-scores to training rows and apply them to both splits.
 
 Usage:  python preprocess_a3.py   (from the repository root)
 """
@@ -27,9 +25,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 from a3_common import (RAW_FILE, BASE_FILE, META_FILE, ROOT, SEED, TEST_SIZE,
-                       GPA_BAND_EDGES, GPA_BAND_LABELS, NOMINAL, FEATURES)
+                       GPA_BAND_EDGES, GPA_BAND_LABELS, NOMINAL, FEATURES, HABIT_NUMERIC)
 
 OUT_DIR = ROOT / "outputs"
 OUT_DIR.mkdir(exist_ok=True)
@@ -147,33 +146,54 @@ note("\nFlagged values are inside the instrument ranges checked in step 1, "
      "so they are genuine tail values and are kept.\n")
 
 # --------------------------------------------------------------------------
-# 7. Encoding
+# 7. Stratified split
 # --------------------------------------------------------------------------
 for c in ["part_time_job", "extracurricular_participation",
           "access_to_tutoring", "dropout_risk"]:
     df[c] = df[c].astype(int)
-onehot = pd.get_dummies(df[NOMINAL], prefix=[f"oh_{c}" for c in NOMINAL],
-                        dtype=int)
-df = pd.concat([df, onehot], axis=1)
-note(f"## 7. Encoding\n\nBooleans to 0/1; {len(NOMINAL)} nominal columns "
-     f"one-hot encoded into {onehot.shape[1]} `oh_*` columns; ordinal columns "
-     "keep their A1 `*_code` integers.\n")
-
-# --------------------------------------------------------------------------
-# 8. Stratified split
-# --------------------------------------------------------------------------
 strata = df["performance_band"].astype(str) + "|" + df["dropout_risk"].astype(str)
 train_idx, test_idx = train_test_split(df.index, test_size=TEST_SIZE,
                                        random_state=SEED, stratify=strata)
 df["split"] = "train"
 df.loc[test_idx, "split"] = "test"
 chk = df.groupby("split")[["exam_score", "dropout_risk", "score_at_ceiling"]].mean()
-note("## 8. Train/test split\n\nStratified on performance band x dropout flag, "
+note("## 7. Train/test split\n\nStratified on performance band x dropout flag, "
      f"seed {SEED}, test share {TEST_SIZE:.0%}.\n\n"
      "| Split | n | Mean score | Dropout rate | At ceiling |\n|---|---|---|---|---|")
 for s, r in chk.iterrows():
     note(f"| {s} | {(df['split'] == s).sum():,} | {r['exam_score']:.2f} | "
          f"{r['dropout_risk']:.2%} | {r['score_at_ceiling']:.1%} |")
+
+# --------------------------------------------------------------------------
+# 8. Use training categories so a held-out value cannot create a feature.
+# An unseen test category has all-zero indicators for that field.
+# --------------------------------------------------------------------------
+categories = {c: sorted(df.loc[train_idx, c].unique().tolist()) for c in NOMINAL}
+categorical = pd.DataFrame({c: pd.Categorical(df[c], categories=categories[c])
+                            for c in NOMINAL}, index=df.index)
+onehot = pd.get_dummies(categorical, prefix=[f"oh_{c}" for c in NOMINAL], dtype=int)
+df = pd.concat([df, onehot], axis=1)
+note(f"\n## 8. Encoding\n\nBooleans use 0/1. The training categories of {len(NOMINAL)} "
+     f"nominal fields define {onehot.shape[1]} `oh_*` indicators. Unseen categories "
+     "map to all zeros in their field. Ordinal fields retain their A1 integer codes.")
+
+# --------------------------------------------------------------------------
+# 9. Keep original units available alongside the train-fitted numeric features.
+# The one-hot blocks and binary predictors retain their indicator interpretation.
+# --------------------------------------------------------------------------
+binary = {"access_to_tutoring", "part_time_job", "extracurricular_participation"}
+numeric = list(dict.fromkeys(c for group in [HABIT_NUMERIC, FEATURES["habits"],
+                             FEATURES["wellbeing"], FEATURES["background"], FEATURES["prior"]]
+                             for c in group if c not in binary))
+scaler = StandardScaler().fit(df.loc[train_idx, numeric])
+z = pd.DataFrame(scaler.transform(df[numeric]), columns=[f"z_{c}" for c in numeric],
+                 index=df.index)
+df = pd.concat([df, z], axis=1)
+note(f"\n## 9. Numeric scaling\n\nFor {len(numeric)} numeric predictors, `z_*` is "
+     "(value − training mean) / training population SD. Both splits use the same "
+     "fitted parameters; a constant training column has scale 1. Original units and "
+     "0/1 indicators are also available. For a within-band fit, estimate the transform "
+     "again using only that band's training rows.")
 
 # --------------------------------------------------------------------------
 # Save
@@ -182,6 +202,11 @@ df.to_csv(BASE_FILE, index=False)
 meta = {
     "feature_groups": FEATURES,
     "one_hot_columns": list(onehot.columns),
+    "training_categories": categories,
+    "habit_clustering": {"numeric": HABIT_NUMERIC, "nominal": "study_environment"},
+    "standardization": {"fit_split": "train", "ddof": 0, "prefix": "z_",
+                        "mean": dict(zip(numeric, scaler.mean_)),
+                        "scale": dict(zip(numeric, scaler.scale_))},
     "removed_redundant": formulas,
     "derived_flagged": derived,
     "leakage": {
@@ -192,8 +217,8 @@ meta = {
     "gpa_band": {"edges_pct": GPA_BAND_EDGES, "labels": GPA_BAND_LABELS},
     "seed": SEED, "test_size": TEST_SIZE,
 }
-with open(META_FILE, "w") as f:
+with open(META_FILE, "w", encoding="utf-8", newline="\n") as f:
     json.dump(meta, f, indent=2)
-(OUT_DIR / "a3_preprocessing_report.md").write_text("\n".join(log) + "\n")
+(OUT_DIR / "a3_preprocessing_report.md").write_text("\n".join(log) + "\n", encoding="utf-8", newline="\n")
 print(f"\nSaved {BASE_FILE.name} {df.shape}, {META_FILE.name}, "
       "outputs/a3_preprocessing_report.md")

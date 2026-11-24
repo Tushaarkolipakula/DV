@@ -1,285 +1,271 @@
-% ---------------------------------------------------------------------------
-% Member 1 section: Kolipakula Sai Tushaar - what students do.
-% DONE - no edits needed. Every number below is produced by
-% Member1/m1_clustering_workflow.py and stored in Member1/outputs/m1_results.json.
-% ---------------------------------------------------------------------------
-\section{Kolipakula Sai Tushaar: Habit Profiles (Clustering)}
+\section{Kolipakula Sai Tushaar: habit profiles and exam scores}
 \label{sec:m1}
 
-\paragraph{Driving question.} A1 (Appendix, Figs.~1--11) showed that study hours, sleep,
-exercise and the leisure share of screen time each move the exam score by a few
-points. A3 asks the next question: \emph{do students form distinct habit
-profiles, and does belonging to a ``good-habits'' profile give an exam
-advantage beyond the student's prior attainment?} Clustering is the right tool
-because it groups students by their whole habit pattern without being told the
-outcome; the outcome is only used afterwards to judge the groups.
+\paragraph{Question.}
+Do students with different habit profiles score differently on the exam, and
+how much of that difference remains among students with comparable prior
+attainment? A1 found that study hours correlated with exam score ($r=0.24$,
+Fig.~2), that quiet-room and dormitory students averaged 91.3 and 85.6
+points respectively (Fig.~3), and that a larger leisure share of screen
+time was associated with lower scores ($r=-0.16$, Fig.~8). Those views
+compared one habit at a time. Prior GPA correlated much more strongly with
+exam score ($r=0.933$, A1 Section~2). This motivates comparing profiles
+formed jointly from habits, first across all students and then within
+groups of similar prior GPA.
 
-\paragraph{Method summary.} K-means~\cite{lloyd1982} on standardised features
-(scaler fitted on the training split, scikit-learn~\cite{pedregosa2011}), with the number of clusters $k$ chosen from four
-diagnostics: the elbow in inertia, the silhouette~\cite{rousseeuw1987} compared against a
-\emph{shuffled null} (each column permuted independently, which keeps every
-variable's distribution but destroys any joint structure), seed stability
-(mean adjusted Rand index~\cite{hubert1985} between six single-start runs) and Gaussian-mixture
-BIC. The Hopkins statistic~\cite{hopkins1954} is reported as a supporting check.
-Cluster differences in score are tested with Kruskal--Wallis~\cite{kruskal1952} and
-$\eta^2_H$ (iteration~1), and with Welch's $t$~\cite{welch1947}, Mann--Whitney
-$U$~\cite{mann1947}, Cohen's $d$~\cite{cohen1988} and 1{,}000-sample bootstrap
-confidence intervals~\cite{efron1993} (iteration~2). A gradient-boosting
-regressor~\cite{friedman2001} with permutation importance~\cite{breiman2001}
-cross-checks the clustering result. Iteration~2 is
-confirmed on the 16{,}000-student test split, which no model or adjustment
-ever saw. Fig.~\ref{fig:m1-workflow} shows the full workflow.
-
-\begin{sidewaysfigure}
-  \centering
-  \includegraphics[width=\textheight]{images/M1_workflow_unrolled.png}
-  \caption{Member~1's workflow as the Keim et~al.\ diamond unrolled into two
-  iterations. The only self-loop is the parameter refinement of $k$ inside
-  iteration~1. The edge labelled \emph{Feedback loop} carries the iteration-1
-  inference into three data transformations (T1--T3) that define the data for
-  iteration~2.}
+\begin{figure}[htbp]\centering
+  \includegraphics[width=\textwidth,height=.67\textheight,keepaspectratio]{diagrams/M1_workflow_unrolled.pdf}
+  \caption{The Member 1 workflow. The first fit reveals how the prior-GPA
+  mix differs across habit profiles. The labelled feedback edge leads to
+  four fresh clustering fits and a new set of visual comparisons.}
   \label{fig:m1-workflow}
-\end{sidewaysfigure}
+\end{figure}
 
-\begin{table}[htbp]
-  \centering\small
-  \caption{Task sequence and the reason behind each visualization.}
-  \label{tab:m1-tasks}
-  \begin{tabular}{@{}lllp{10.4cm}@{}}
-    \toprule
-    Stage & Fig. & Task & Why this chart \\
-    \midrule
-    V1 & \ref{fig:m1-corr} & Correlate & A matrix shows every pair at once; any joint structure clustering could find must show up here first. \\
-    M1 & \ref{fig:m1-k1} & Select $k$ & Four small multiples on one $k$ axis; the dashed null line makes ``better than random'' visible. \\
-    V1 & \ref{fig:m1-map1} & Overview & Hexbin density (80k points would overplot); clusters faceted, not overlaid, because four hues on one scatter are not colour-blind safe. Heatmap gives the profile. \\
-    V1 & \ref{fig:m1-score1} & Compare & Violins show the overlap; means with CIs show the size of the gap on a readable scale. \\
-    V1 & \ref{fig:m1-conf1} & Explain & 100\% stacked bars for composition; dot plot within each band to test the confound. \\
-    M2 & \ref{fig:m1-k2} & Re-select $k$ & Same panels as Fig.~\ref{fig:m1-k1} with D1 in grey, so the change is the only new information. \\
-    V2 & \ref{fig:m1-map2} & Overview & With two clusters a direct scatter is legible; diverging bars give centroids in $z$ with raw-unit labels. \\
-    V2 & \ref{fig:m1-gap} & Compare & One axis (points) for raw, adjusted and GPA gaps, so the reader compares lengths directly. \\
-    V2 & \ref{fig:m1-band} & Search & Raw and adjusted gap side by side per band locates where any gap survives. \\
-    M2/V2 & \ref{fig:m1-sup} & Validate & A supervised model confirms the clustering conclusion with a different method. \\
-    \bottomrule
-  \end{tabular}
+\subsection{First iteration: clustering the full training cohort}
+Table~\ref{tab:m1-tasks} connects each analytical question to its visual evidence.
+
+\begin{table}[htbp]\centering\small
+\caption{What each view contributes to the two clustering iterations.}
+\label{tab:m1-tasks}
+\begin{tabular}{@{}p{.23\linewidth}p{.70\linewidth}@{}}
+\toprule
+View & Question answered \\
+\midrule
+Elbow and silhouette & Where do additional clusters give diminishing gains in compactness, and how well separated are the candidate partitions? \\
+PCA scatterplots & Do the models assign similar groups to the same students, and where do the projected groups overlap? \\
+Profile heatmaps & Which habits and study environments distinguish groups? Cell values preserve the units of each measure. \\
+Score box plots & How much do score distributions overlap, and does the upper score limit compress the spread? \\
+GPA composition & How do the proportions of students from the four prior-GPA bands differ between clusters? \\
+Gap intervals & How large is each score contrast relative to zero, and how precisely does the held-out sample estimate it? \\
+\bottomrule
+\end{tabular}
 \end{table}
 
-% ---------------------------------------------------------------------------
-\subsection{Iteration 1: clustering the six raw habits}
+The five numeric measures are daily study hours, sleep hours, weekly exercise
+frequency, leisure share of screen time and attendance percentage. Study
+environment is a sixth, categorical measure. Each numeric feature has unit
+training variance. The environment indicators are centred and rescaled
+together to one unit of total training variance. This gives a rare environment
+less influence than individually standardizing every indicator would give it.
+Exam score, prior GPA and performance band are excluded from the clustering
+features. Training selects the models. Held-out rows then supply the cluster
+profiles, exam scores and comparisons.
 
-\paragraph{Data D1.} Six raw, non-derived habit variables from the training
-split: daily study hours, sleep hours, weekly exercise, attendance, social
-media hours and streaming hours. Derived columns are left out so that no
-behaviour is counted twice.
+\paragraph{Choosing the number of clusters.}
+K-means~\cite{lloyd1982} is fitted for $k=1,\ldots,8$ with ten starts per
+candidate. Figure~\ref{fig:m1-selection} places the normalized-inertia elbow
+alongside a silhouette curve~\cite{rousseeuw1987}. The elbow is the largest
+vertical departure from the straight line joining the first and last
+inertia values. Silhouettes use a fixed sample of 1,800 training rows per
+fit. Among the values within 0.01 of the maximum silhouette, the analysis
+chooses the one nearest the elbow, breaking ties towards smaller $k$.
+The elbow measures diminishing gains in compactness. The silhouette also
+accounts for how close observations are to neighbouring clusters.
+All five curves have an elbow at $k=3$ and their silhouette peaks at
+$k=2$. In the pooled cohort the silhouette falls from 0.159 at $k=2$ to
+0.134 at $k=3$. We retain two clusters. Their modest silhouette suggests
+substantial overlap between the profiles.
 
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.62\textwidth]{images/M1_fig01_habit_correlations.png}
-  \caption{Pearson correlations among the six habits, prior GPA and exam score
-  (training split). Off the diagonal, no pair of habits correlates above
-  $|r|=0.007$. Only study hours ($r=0.24$), sleep (0.09) and exercise (0.09)
-  relate to the exam score, and each relates almost equally to prior GPA.}
-  \label{fig:m1-corr}
+\begin{figure}[htbp]\centering
+  \includegraphics[width=\textwidth]{images/M1_gpa_selection.png}
+  \caption{Training-only selection curves for the pooled model and for
+  each independent GPA-band fit. The dotted line in each top panel marks
+  its elbow. The highlighted points mark the chosen $k$.}
+  \label{fig:m1-selection}
 \end{figure}
 
-Fig.~\ref{fig:m1-corr} is the first warning. The six habits are statistically
-independent of each other, so the habit space has no obvious joint structure
-for clustering to find. Attendance, social media and streaming hours have no
-correlation with the score at all ($|r|\le 0.006$).
+\paragraph{A second clustering model.}
+At the selected $k$, a Gaussian mixture model (GMM) fitted by expectation--maximization~\cite{dempster1977} estimates one diagonal
+covariance matrix per component. Five starts and a 0.01 covariance
+regularizer limit sensitivity to initialization and near-constant
+indicators. The mixture provides a comparison across model assumptions:
+K-means uses distance to a centre, whereas the mixture allows different
+spreads along the input axes. Gaussian components approximate the geometry
+of the encoded environment indicators. Cluster numbers run from lower to
+higher mean study hours in the training data. They are assigned separately
+for each model and each fitting population. The adjusted Rand index
+(ARI)~\cite{hubert1985} compares the two partitions without assuming their
+numeric labels match. The pooled held-out ARI is 0.732. Figure~\ref{fig:m1-map1}
+shows the common separation along the first principal component and the
+overlap around the boundary.
 
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=\textwidth]{images/M1_fig02_k_selection_raw.png}
-  \caption{Choosing $k$ on D1. The elbow is smooth, GMM BIC keeps falling, the
-  real silhouette (solid) lies on top of the shuffled null (dashed) at every
-  $k$, and seed stability never exceeds ARI 0.52. No $k$ is preferred.}
-  \label{fig:m1-k1}
-\end{figure}
-
-\paragraph{Model M1.} Fig.~\ref{fig:m1-k1} shows that K-means finds nothing
-the shuffled data does not also produce: at $k=4$ the silhouette is 0.117
-against 0.116 for the null, and two runs with different seeds agree only at
-ARI 0.24. At $k=2$ the ARI is 0.00, because a round cloud can be cut in half
-along any direction. The Hopkins statistic is 0.61, only slightly above the
-0.5 expected for random data; the excess comes from the non-uniform shapes of
-the individual variables, which the shuffled null keeps. Since every criterion is flat, $k=4$ was kept for
-readable profiles. The choice of $k$ is arbitrary, and that is part of the
-finding.
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=\textwidth]{images/M1_fig03_cluster_map_raw.png}
-  \caption{Iteration-1 clusters ($k=4$) on the first two principal components
-  (which explain only 16.9\% and 16.7\% of variance). Each panel shows one
-  cluster over the grey density of all students. The heatmap gives centroids in
-  $z$-units: clusters differ by up to 1.9\,SD in exercise and streaming and
-  1.6\,SD in social media, but by only 0.1\,SD in study hours and sleep.}
+\begin{figure}[htbp]\centering
+  \includegraphics[width=.96\textwidth]{images/M1_gpa_pca_global.png}
+  \caption{The same held-out students coloured by K-means and GMM
+  assignment. The plot samples 1,400 students. Each point is projected onto the first two principal
+  components learned from training habits. Axis labels give the share of
+  variance retained, so overlap can be read in the context of the discarded
+  dimensions.}
   \label{fig:m1-map1}
 \end{figure}
+\begin{figure}[htbp]\centering
+  \includegraphics[width=.96\textwidth,height=.25\textheight,keepaspectratio]{images/M1_gpa_profiles_global.png}\par\smallskip
+  \includegraphics[width=.96\textwidth,height=.25\textheight,keepaspectratio]{images/M1_gpa_profiles_gmm_global.png}
+  \caption{Pooled K-means (top) and GMM (bottom) profiles. Cell text shows mean habits in the
+  original units and environment shares in percent. Colour shows departure
+  from the training mean in standard deviations, allowing comparison across
+  variables with different scales.}
+  \label{fig:m1-profile1}
+\end{figure}
 
-Fig.~\ref{fig:m1-map1} shows K-means slicing one round cloud into four wedges.
-The slices are defined by exercise, social media and streaming hours, two of
-which have no relation to the score. Study hours, the habit most related to
-the score, does not separate the clusters at all.
+\paragraph{Reading the profiles.}
+The profile heatmap (Fig.~\ref{fig:m1-profile1}) shows that C2 averages
+5.46 study hours per day and spends 37\% of screen time on leisure. For C1
+the figures are 2.52 hours and 60\%. Sleep averages about seven hours in
+both clusters. Attendance and environment shares also differ little.
+Mean exam scores are 91.02 for C2 and 86.86 for C1.
+Figure~\ref{fig:m1-score1} shows the spread of scores behind the group means.
+The median and interquartile range keep the pile-up near 100 visible.
+The tie-corrected Kruskal--Wallis test~\cite{kruskal1952} compares ranks
+across all clusters. We report $H$, its degrees of freedom and the
+rank-based effect size $\eta^2_H=\max(0,(H-k+1)/(n-k))$.
+A small $p$ at large $n$ can accompany a modest difference in rank.
+For pooled K-means, $H(1)=393.46$, $p=1.46\times10^{-87}$ and
+$\eta^2_H=0.0245$ ($n=16{,}000$). The GMM gives $H(1)=382.55$,
+$p=3.47\times10^{-85}$ and $\eta^2_H=0.0238$.
 
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=\textwidth]{images/M1_fig04_score_by_cluster_raw.png}
-  \caption{Exam score by iteration-1 cluster. The difference is statistically
-  significant (Kruskal--Wallis $H=182$, $p=3\times10^{-39}$) but the effect
-  size is negligible ($\eta^2_H=0.0028$): the best and worst clusters differ by
-  2.0 points (90.1 vs.\ 88.1), and the distributions overlap almost entirely.}
+\begin{figure}[htbp]\centering
+  \includegraphics[width=.93\textwidth]{images/M1_gpa_scores_global.png}
+  \caption{Held-out score distributions by global cluster. Each box spans
+  the interquartile range and its line marks the median. Whiskers reach
+  the most extreme observed points within 1.5 interquartile ranges.
+  Observations beyond the whiskers are hidden in the figure and retained
+  for the tests.}
   \label{fig:m1-score1}
 \end{figure}
 
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=\textwidth]{images/M1_fig05_gpa_confound_raw.png}
-  \caption{Left: share of each cluster in each prior-GPA band. The lowest
-  scoring cluster (C4) holds 25.3\% Below-80 students against 18.8\% for the
-  highest (C1). Right: mean score per cluster inside each band. The cluster
-  gap shrinks from 2.0 points to 0.06--0.22 points in the upper three bands;
-  1.2 points remain in the Below-80 band.}
-  \label{fig:m1-conf1}
+\subsection{Feedback loop: checking the prior-GPA composition}
+Of the higher-study K-means cluster, 46.4\% entered with GPA 4.0,
+compared with 32.3\% of the lower-study cluster. Conversely, 16.0\% of
+the higher-study cluster and 29.2\% of the lower-study cluster fall
+in the lowest GPA band. These different starting points could account
+for part of the 4.15-point pooled gap.
+Figure~\ref{fig:m1-mix} motivated two comparisons. First, hold the global
+clusters fixed and give every cluster the same prior-GPA composition.
+For each band, subtract the mean score of the lowest-study cluster from
+the mean of the highest-study cluster, then average the four differences
+using the held-out band shares. This quantifies the part of the observed
+contrast associated with a different mix of these four bands. Second,
+ask whether a fresh model within each band finds profiles that still
+separate scores. These comparisons answer different questions because
+the refitted models can assign students to different groups.
+
+\begin{figure}[htbp]\centering
+  \includegraphics[width=.82\textwidth]{images/M1_gpa_mix.png}
+  \caption{The GPA mix of the global K-means clusters. Each row reports
+  percentages within that cluster and held-out counts in parentheses.
+  Reading down a column shows which cluster contains the largest share
+  of students at that prior-attainment level.}
+  \label{fig:m1-mix}
 \end{figure}
 
-\paragraph{Knowledge K1.} Figs.~\ref{fig:m1-score1} and~\ref{fig:m1-conf1}
-lead to three inferences:
-\begin{enumerate}
-  \item \textbf{The raw habit space has no natural clusters.} The silhouette
-        equals that of shuffled data and partitions change with the random
-        seed, so the iteration-1 clusters are arbitrary slices, not student
-        types.
-  \item \textbf{The slices follow the wrong variables.} Because the six
-        habits are independent and equally weighted after scaling, K-means
-        splits on whichever axes it happens to pick: here exercise, social
-        media and streaming, not study hours. Raw leisure hours carry no signal;
-        A1 (Appendix, Fig.~8) showed that the \emph{share} of screen time spent on
-        leisure is what relates to performance.
-  \item \textbf{The small score gap that exists is mostly prior GPA.} The
-        clusters differ in their mix of prior-GPA bands, and inside a band the
-        gap nearly disappears. The 1.2 points left in the Below-80 band need
-        explaining: that band spans GPA 1.64--3.20, so students in it still
-        differ a lot in prior attainment.
-\end{enumerate}
+\subsection{Second iteration: clustering separately within each GPA band}
+Within each band, the pipeline fits new scaling parameters, repeats the
+elbow and silhouette search, and refits K-means, GMM and PCA on the
+training students in that band. It applies those fits to the corresponding
+test students, giving every held-out student one global and one local
+assignment per algorithm. A label such as C1 always identifies the lowest
+mean study time in that model's training data. The other characteristics
+of C1 can change across bands. The within-band PCA axes can also rotate,
+so the point locations are compared within panels. The detailed maps, habit profiles and score distributions appear in Figures~\ref{fig:m1-map2}--\ref{fig:m1-score2} at the end of this section.
 
-% ---------------------------------------------------------------------------
-\subsection{Feedback loop: transforming the data}
+Table~\ref{tab:m1-local} gives the four local rank tests for each algorithm.
+Holm's correction~\cite{holm1979} controls the family of four within-band
+comparisons separately for each model. Only the lowest band shows evidence
+of a score difference after correction. At the GPA ceiling both K-means
+clusters have a median score of 100.
 
-Each inference maps to one transformation of the data:
+\begin{table}[htbp]\centering\small
+\caption{Held-out comparisons after refitting within GPA bands.
+All $H$ tests have one degree of freedom. ARI compares K-means with GMM.}
+\label{tab:m1-local}
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+& & \multicolumn{3}{c}{K-means} & \multicolumn{2}{c}{GMM} & \\
+\cmidrule(lr){3-5}\cmidrule(lr){6-7}
+Band & $n$ & $H$ & $\eta_H^2$ & Holm $p$ & $H$ & Holm $p$ & ARI \\
+\midrule
+Below 80 & 3,491 & 41.62 & 0.0116 & $<10^{-8}$ & 23.62 & $<10^{-5}$ & 0.004 \\
+80--90 & 3,013 & 1.10 & $<0.0001$ & 0.587 & 2.64 & 0.313 & 0.714 \\
+90--99 & 3,061 & 2.11 & 0.0004 & 0.440 & 1.36 & 0.488 & 0.765 \\
+Elite (4.0) & 6,435 & 0.69 & 0.0000 & 0.587 & 0.01 & 0.917 & $-0.001$ \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\begin{description}
-  \item[T1 (feature space, from inferences 1--2).] Drop attendance, social media
-        hours and streaming hours; add \texttt{leisure\_screen\_share}. The new
-        space D2 holds four habits: study hours, sleep, exercise and leisure
-        share. Leisure share correlates $r=-0.64$ with study hours, partly by
-        construction (screen time includes study time). This dependence is
-        what gives the space a real axis to cluster on: study-dominant versus
-        leisure-dominant screen use.
-  \item[T2 (target, from inference 3).] Replace the raw score with a
-        \emph{GPA-adjusted score}: the student's score minus the mean score of
-        all training students in the same prior-GPA bin (24 bins 0.1 GPA wide
-        below 4.0, plus GPA exactly 4.0 as a 25th bin). Bin means are learned on the
-        training split only and applied unchanged to the test split. These bin
-        means alone explain $R^2=0.870$ of test-set score variance, so the
-        adjusted score is the part of the exam that prior GPA does not predict
-        (SD 4.2 points). Binning, rather than a straight-line fit, follows the
-        curve near the ceiling without assuming its shape.
-  \item[T3 (censoring).] 39.9\% of training students have GPA 4.0, and 53.6\%
-        of those score exactly 100, so their adjusted score is capped. Every
-        iteration-2 result is repeated with these students excluded.
-\end{description}
+\paragraph{How much of the score gap remains?}
+The signed contrast always uses the highest-study group minus the
+lowest-study group. Figure~\ref{fig:m1-gap} puts the raw gap, the gap with
+a common GPA mix and the new within-band contrasts on one scale. Percentile
+95\% intervals resample held-out students 1,000 times within GPA bands~\cite{efron1993}.
+Each resample reuses the same students for the three comparisons. These
+intervals condition on the fitted models and observed band weights.
+The raw K-means difference is 4.15 points (95\% CI 3.81 to 4.52).
+With global cluster labels held fixed, using the common band mix reduces
+it to 0.51 (0.35 to 0.69). The reduction is 3.64 points
+(3.34 to 3.96), about 88\% of the raw contrast. With refitted labels the
+weighted contrast is 0.41 points (0.24 to 0.58). The lowest band has the
+largest remaining local gap, 2.01 points (1.46 to 2.53). In the other
+three bands the estimated local contrasts range from $-0.15$ to $+0.20$
+points and their intervals include zero.
 
-% ---------------------------------------------------------------------------
-\subsection{Iteration 2: clustering the refined habits}
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=\textwidth]{images/M1_fig06_k_selection_refined.png}
-  \caption{Choosing $k$ on D2 (blue) against D1 (grey). At $k=2$ the refined
-  space is now stable (ARI 0.99) and clearly above its null (silhouette 0.233
-  vs.\ 0.194). GMM BIC is lowest at $k=5$, but that solution is not stable
-  (ARI 0.53), so $k=2$ is used.}
-  \label{fig:m1-k2}
-\end{figure}
-
-\paragraph{Model M2.} After T1, Fig.~\ref{fig:m1-k2} shows a real, repeatable
-structure: six runs agree almost perfectly at $k=2$, and the silhouette beats
-the shuffled null at every $k$. The pipeline selects $k$ automatically as the
-most stable value. The Hopkins statistic rises to 0.88, but it is not used to
-choose $k$: the leisure share and study hours fill only a triangular region
-(Fig.~\ref{fig:m1-map2}), and a uniform reference sample drawn over the
-bounding box inflates the statistic.
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=\textwidth]{images/M1_fig07_cluster_map_refined.png}
-  \caption{The two refined clusters. \emph{Study-focused} (35{,}730 training
-  students) studies 5.5\,h/day with 37\% of screen time on leisure;
-  \emph{Leisure-heavy} (28{,}270) studies 2.5\,h/day with 60\% on leisure.
-  Sleep (7.0\,h both) and exercise (3.5 vs.\ 3.5 days) do not differ.
-  Diamonds mark centroids.}
-  \label{fig:m1-map2}
-\end{figure}
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=\textwidth]{images/M1_fig08_raw_vs_adjusted_gap.png}
-  \caption{Study-focused minus Leisure-heavy, in exam-score points, with 95\%
-  bootstrap CIs. The raw gap is 4.2 points (test 4.1, $d=0.36$). The same
-  clusters differ by 4.5 points in prior GPA on the percentage scale. On the
-  GPA-adjusted score the gap is $+0.01$ (train) and $-0.01$ (test, CI
-  $-0.13$ to $+0.13$, Welch $p=0.92$, $d=-0.002$), and stays at $+0.01$ with
-  GPA-4.0 students removed.}
+\begin{figure}[htbp]\centering
+  \includegraphics[width=.89\textwidth]{images/M1_gpa_gaps.png}
+  \caption{K-means score contrasts in exam points. The first two estimates
+  use the same global labels. The third pools four independently estimated
+  local contrasts, reported separately in the final four rows.}
   \label{fig:m1-gap}
 \end{figure}
 
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=\textwidth]{images/M1_fig09_within_band_refined.png}
-  \caption{Gap per prior-GPA band on the test split, raw (grey) and adjusted
-  (blue). The only raw gap left, 2.5 points in the Below-80 band, matches a
-  0.10-point GPA difference between the clusters \emph{inside} that band. After
-  adjustment it is $-0.01$ (CI $-0.34$ to $+0.31$). In the other bands both
-  gaps are within $\pm0.15$.}
-  \label{fig:m1-band}
+\paragraph{Interpretation.}
+The GMM also yields a large reduction for the fixed profiles
+(4.19 points pooled, 0.49 with a common band mix). But its refitted
+weighted contrast is $-0.35$ points (95\% CI $-0.52$ to $-0.19$). The
+difference in direction can be traced to the lowest band. K-means groups
+students averaging 1.85 versus 4.60 hours of study. The GMM instead
+puts every caf\'e or dormitory student in one component and the other
+environments in the other. Their study means differ by only 0.25 hours,
+their assignments agree with K-means at ARI 0.004, and their signed score
+contrast is $-1.54$ points. Thus GPA composition accounts for most of
+the pooled difference under either algorithm. The smaller local
+contrast depends on which habit or environment distinguishes the fitted
+groups.
+The observations are cross-sectional, broad bands retain GPA variation,
+and score compression is strongest at GPA 4.0. None of the contrasts
+estimates what would happen to a student's exam score after changing
+their study habits.
+
+\paragraph{Reproduction.}
+Run the following from the repository root.
+\begin{verbatim}
+python preprocess_a3.py
+python Member1/m1_habits_by_gpa.py
+\end{verbatim}
+The selection curves,
+profiles, score tests, cluster-by-GPA table, contrasts and paired
+assignments are in \texttt{Member1/outputs/} under the
+\texttt{gpa\_} prefix. Figures use the \texttt{M1\_gpa\_} prefix.
+
+\begin{figure}[p]\centering
+  \includegraphics[width=.92\textwidth,height=.82\textheight,keepaspectratio]{images/M1_gpa_pca_bands.png}
+  \caption{Held-out PCA scatterplots after refitting. Each row uses its
+  own training PCA basis, and its two columns show both algorithms on
+  the same held-out sample.}
+  \label{fig:m1-map2}
 \end{figure}
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=\textwidth]{images/M1_fig10_supervised_check.png}
-  \caption{Supervised check: gradient boosting fitted on the four refined
-  habits (train) and scored on the test split. Habits explain $R^2=0.070$ of
-  the exam score and 0.080 of prior GPA, but 0.000 of the GPA-adjusted score.
-  Permutation importance shows study hours carries most of the prior-GPA
-  signal; no habit carries any adjusted-score signal.}
-  \label{fig:m1-sup}
+\begin{figure}[p]\centering
+  \includegraphics[width=.98\textwidth,height=.34\textheight,keepaspectratio]{images/M1_gpa_profiles_bands.png}\par\smallskip
+  \includegraphics[width=.98\textwidth,height=.34\textheight,keepaspectratio]{images/M1_gpa_profiles_gmm_bands.png}
+  \caption{Average habits and environment shares for refitted K-means (top)
+  and GMM clusters (bottom). Cell colours are relative to the corresponding band's training
+  distribution. The numbers allow the profiles to be compared in common
+  physical units across bands.}
+  \label{fig:m1-profile2}
 \end{figure}
-
-\paragraph{Knowledge K2.}
-\begin{enumerate}
-  \item \textbf{There is one stable habit profile split}, and it is about
-        how students use screen time: study-focused versus leisure-heavy.
-        Sleep and exercise do not form profiles of their own.
-  \item \textbf{The profile's 4.2-point advantage is entirely its prior-GPA
-        advantage.} Study-focused students arrive with a higher prior GPA; once
-        GPA is held fixed, the gap is zero with a confidence interval narrower
-        than $\pm0.13$ points, on unseen test data and with the ceiling group
-        removed (Fig.~\ref{fig:m1-gap}).
-  \item \textbf{Coarse bands hide confounding.} The Below-80 gap that survived
-        banding in iteration~1 (Fig.~\ref{fig:m1-conf1}) is GPA variation
-        inside the band (Fig.~\ref{fig:m1-band}). Any ``effect within the
-        lowest band'' found with these four bands, including the one in A1
-        (Appendix) Fig.~20, should be re-checked against the fine-grained adjustment.
-  \item \textbf{Habits mark the trajectory, not the exam.} Habits predict prior
-        GPA about as well as they predict the exam (Fig.~\ref{fig:m1-sup}).
-        Prior GPA is measured before the exam and the habits are measured once,
-        so this is a cross-sectional association: students with
-        study-focused habits have been doing better for longer. The data cannot
-        show that changing a habit would raise a score, and nothing in it
-        suggests an exam-specific benefit.
-\end{enumerate}
-
-\paragraph{Reproducibility.} Running \texttt{preprocess\_a3.py} and then
-\texttt{m1\_clustering\_workflow.py} (about one minute) regenerates every figure and number in this section. Cluster labels and the
-adjusted score for all 80{,}000 students are saved for use in Tableau,
-in \texttt{m1\_cluster\_assignments.csv.gz} under \texttt{Member1/outputs}.
+\begin{figure}[p]\centering
+  \includegraphics[width=.92\textwidth,height=.78\textheight,keepaspectratio]{images/M1_gpa_scores_bands.png}
+  \caption{Held-out score box plots after refitting, on the same score
+  axis across bands. The upper bound of 100 compresses differences near
+  the GPA ceiling. All observations enter the tests.}
+  \label{fig:m1-score2}
+\end{figure}

@@ -46,7 +46,7 @@ It prints your iteration-1 and iteration-2 results. Your numbers should match th
 6. Put every number you quote in the report into the `R` dictionary. The script saves it to `MemberX/outputs/mX_results.json`, so the report can be checked against it.
 7. Edit only your own files (see Part E), so nobody gets merge conflicts.
 
-Look at Tushaar's figures in `images/M1_*.png` and his code in `Member1/m1_clustering_workflow.py` for working examples of every chart type you need (heatmap, PR-style curves, bar charts, dot plots with confidence intervals).
+Look at Tushaar's figures in `images/M1_*.png` and his current analysis in `Member1/m1_habits_by_gpa.py` for working examples of every chart type you need (heatmap, PR-style curves, bar charts, dot plots with confidence intervals).
 
 ---
 
@@ -94,7 +94,7 @@ dot -Tpng -Gdpi=170 M2_workflow_unrolled.dot -o ../images/M2_workflow_unrolled.p
 
 No Graphviz installed? Paste the `.dot` file into https://dreampuf.github.io/GraphvizOnline, download the PNG, and save it as `images/M2_workflow_unrolled.png`.
 
-Also open `diagrams/A3_master_workflow.dot` and replace the Member 2 `K2\n(fill in)` box text. Render it the same way to `images/A3_master_workflow.png`.
+Also open `diagrams/A3_master_workflow.dot` and update the wellbeing result in node `w2` when your interpretation is final. Regenerate both the PNG for the README and the PDF used in the report with the commands at the top of the DOT file.
 
 ### B4. Write Section 5
 
@@ -160,12 +160,12 @@ See the `# TODO fig..` comments in `Member3/m3_regression_workflow.py`.
 
 ### C3. Diagram and Section 6
 
-Same as B3 and B4, using `diagrams/M3_workflow_unrolled.dot` and `report/sections/06_member3_aman.tex`. Also fill the Member 3 K2 box in `A3_master_workflow.dot`.
+Same as B3 and B4, using `diagrams/M3_workflow_unrolled.dot` and `report/sections/06_member3_aman.tex`. Update node `b2` in `A3_master_workflow.dot` with your final result and regenerate both diagram formats.
 
 ### C4. Video demo and slides (Aman only)
 
 - **Length:** about 9–10 minutes. Each member presents their own strand, about 3 minutes each.
-- **Tushaar's segment:** he records it himself. His slide order and narration are in `Member1/M1_viva_and_video.md`, and his slides are simply his figures, in order: `images/M1_workflow_unrolled.png`, then `M1_fig01` to `M1_fig10`.
+- **Tushaar's segment:** use the [captioned segment](Member1/Member1_habits_demo.mp4) for the visuals. Tushaar can record his voice-over using the [viva notes](Member1/M1_viva_and_video.md). His current report figures begin with `M1_gpa_`.
 - **Slide order:**
   1. title;
   2. question and dataset;
