@@ -13,7 +13,7 @@ This file is the current team plan. Clustering is Tushaar's strand; Advaya owns 
 | **Advaya** | Wellbeing: supervised **classification** of `dropout_risk` | 5 (yours), plus 1 Introduction, 7 Synthesis, 8 Conclusions | **assembles and compiles the final report** |
 | **Aman** | Background: supervised **regression** + statistical tests on `exam_score` | 6 (yours) | **makes the video and the slides** |
 
-Advaya’s classification starter and figure slots are ready. Aman’s regression models, five figures and workflow diagram are complete. See [his analysis guide](Member3/README.md) for the verified outputs.
+Advaya’s three classifiers, seven figures and unrolled workflow are complete. Aman’s regression models, five figures and workflow diagram are complete. See [his analysis guide](Member3/README.md) for the verified outputs.
 
 ---
 
@@ -29,7 +29,7 @@ pip install -r requirements.txt
 python preprocess_a3.py                      # about 10 s, creates data/a3_base.csv.gz
 ```
 
-Then run your starter script:
+Then run your member workflow:
 
 - Advaya: `python Member2/m2_classification_workflow.py` (about 20 s)
 - Aman: `python Member3/m3_regression_workflow.py` (about 5 s)
@@ -52,9 +52,9 @@ Look at Tushaar's figures in `images/M1_*.png` and his current analysis in `Memb
 
 ## Part B: Advaya (classification of dropout risk)
 
-### B1. Make the 6 figures
+### B1. Reproduce the classification figures
 
-Every `# TODO fig..` comment in `Member2/m2_classification_workflow.py` says exactly what to draw. Summary:
+The workflow regenerates the six assigned figures below and an additional confusion-matrix figure.
 
 | File (auto-named by `save`) | What it shows | Chart |
 |---|---|---|
@@ -85,7 +85,7 @@ Every `# TODO fig..` comment in `Member2/m2_classification_workflow.py` says exa
 
 ### B3. Workflow diagram
 
-Edit the two `TODO` boxes in `diagrams/M2_workflow_unrolled.dot` (K1 and K2: one short line each with a key number). Then render it:
+The completed K1 and K2 results are in `diagrams/M2_workflow_unrolled.dot`. To render the PNG again:
 
 ```bash
 cd diagrams

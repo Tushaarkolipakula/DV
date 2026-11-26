@@ -6,6 +6,8 @@
 
 > **Advaya and Aman: start with [TEAM_INSTRUCTIONS.md](TEAM_INSTRUCTIONS.md).** It lists exactly what is left for each of you, with expected numbers.
 
+For the three verified workflows, their results and reproduction commands, see the [analysis guide](ANALYSIS_GUIDE.md).
+
 ![Team workflow](images/A3_master_workflow.png)
 
 ## Status
@@ -16,7 +18,7 @@
 | Team workflow diagram, report Sections 2–3 | Tushaar | ✅ shared diagram and sections ready; teammates can update their findings |
 | Member 1: pooled and within-GPA clustering, figures, report Section 4 | Tushaar | ✅ done |
 | Report skeleton (`report/main.tex`, compiles now, A1 appendix attached) | Tushaar | ✅ done |
-| Member 2: classification of dropout risk, Section 5 | Advaya | ⏳ starter script runs; figures and text to do |
+| Member 2: classification of dropout risk, Section 5 | Advaya | Models, seven figures and workflow verified. Section 5 is a separate deliverable. |
 | Member 3: regression and statistical tests, Section 6 | Aman | Models, five figures and workflow verified. See [Aman’s analysis guide](Member3/README.md). Section 6 is a separate deliverable. |
 | Introduction, Synthesis, Conclusions, final PDF | Advaya | ⏳ |
 | Video demo and slides | Aman (+ each member's segment) | ⏳ |
@@ -81,9 +83,9 @@ The earlier four-feature sensitivity analysis remains available in `Member1/m1_c
 | `data/a3_feature_groups.json` | Feature groups, leakage rules, one-hot names |
 | `outputs/a3_preprocessing_report.md` | Log of every preprocessing check and count |
 | `Member1/` | Tushaar: `m1_habits_by_gpa.py`, `outputs/` (all numbers, tables, cluster labels), viva + video notes |
-| `Member2/` | Advaya: starter `m2_classification_workflow.py` |
+| `Member2/` | Advaya: classification workflow `m2_classification_workflow.py` |
 | `Member3/` | Aman: regression workflow, results and figure guide |
-| `images/` | All report figures (`M1_*` done; `M3_*` done; `M2_*` to come) and workflow diagrams |
+| `images/` | All three members’ analysis figures and workflow diagrams |
 | `diagrams/` | Graphviz sources for every workflow diagram (M2/M3 templates ready) |
 | `report/` | `main.tex` + `sections/` (one file per section, owners marked at the top of each) |
 | `reference/` | A3 brief, A1 report (used as the Appendix), A1 preprocessing script and data dictionary |

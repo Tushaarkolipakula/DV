@@ -25,7 +25,7 @@ digraph A3 {
     style="rounded"; color="#91A6B3"; margin=12;
     w1 [label="PASS 1   ·   Classify dropout risk\n\nFit logistic regression, tree and forest.\nInspect precision–recall, ROC and tree splits.\nStress and motivation reconstruct the flag: \nthe initial models have label leakage."];
     wt [label="Remove stress and motivation,\nthe two inputs used to define\nthe dropout flag.", fillcolor="#FFF1E8",color="#B95A30"];
-    w2 [label="PASS 2   ·   Refit classifiers\n\nCompare precision–recall with the initial\nmodels and base rate. Inspect permutation\nimportance and proxy features.\nFigures and interpretation: Advaya."];
+    w2 [label="PASS 2   ·   Refit classifiers\n\nTree average precision falls from 1.00 to 0.043.\nLogistic regression reaches 0.075 vs prevalence\n0.020. GPA and mental health provide\nthe strongest remaining ranking signals."];
     w1 -> wt [label="Feedback loop", fontname="Arial Bold", color="#AD4726", fontcolor="#AD4726",penwidth=2];
     wt -> w2;
   }
