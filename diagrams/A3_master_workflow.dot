@@ -34,7 +34,7 @@ digraph A3 {
     style="rounded"; color="#91A6B3"; margin=12;
     b1 [label="PASS 1   ·   Model exam score\n\nFit OLS and gradient boosting. Inspect\nresiduals and observed vs predicted scores.\nGPA dominates the fit; score and GPA\nboth have sizeable ceiling groups."];
     bt [label="Refit below the GPA ceiling.\nTest the tutoring association\nwith prior GPA as a covariate.", fillcolor="#FFF1E8",color="#B95A30"];
-    b2 [label="PASS 2   ·   Examine adjusted associations\n\nFit median regression below the GPA cap.\nCompare ANOVA and GPA-adjusted ANCOVA\non the training cohort. Chart coefficients\nand tutoring gaps. Interpretation: Aman."];
+    b2 [label="PASS 2   ·   Examine adjusted associations\n\nFit median regression below the GPA cap.\nFull training cohort: raw tutoring gap +2.76.\nGPA-adjusted slope −0.03 (p = 0.43).\nTiming of tutoring is unknown."];
     b1 -> bt [label="Feedback loop", fontname="Arial Bold", color="#AD4726", fontcolor="#AD4726",penwidth=2];
     bt -> b2;
   }

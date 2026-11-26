@@ -17,7 +17,7 @@
 | Member 1: pooled and within-GPA clustering, figures, report Section 4 | Tushaar | ✅ done |
 | Report skeleton (`report/main.tex`, compiles now, A1 appendix attached) | Tushaar | ✅ done |
 | Member 2: classification of dropout risk, Section 5 | Advaya | ⏳ starter script runs; figures and text to do |
-| Member 3: regression and statistical tests, Section 6 | Aman | ⏳ starter script runs; figures and text to do |
+| Member 3: regression and statistical tests, Section 6 | Aman | Models, five figures and workflow verified. See [Aman’s analysis guide](Member3/README.md). Section 6 is a separate deliverable. |
 | Introduction, Synthesis, Conclusions, final PDF | Advaya | ⏳ |
 | Video demo and slides | Aman (+ each member's segment) | ⏳ |
 
@@ -82,8 +82,8 @@ The earlier four-feature sensitivity analysis remains available in `Member1/m1_c
 | `outputs/a3_preprocessing_report.md` | Log of every preprocessing check and count |
 | `Member1/` | Tushaar: `m1_habits_by_gpa.py`, `outputs/` (all numbers, tables, cluster labels), viva + video notes |
 | `Member2/` | Advaya: starter `m2_classification_workflow.py` |
-| `Member3/` | Aman: starter `m3_regression_workflow.py` |
-| `images/` | All report figures (`M1_*` done; `M2_*`, `M3_*` to come) and workflow diagrams |
+| `Member3/` | Aman: regression workflow, results and figure guide |
+| `images/` | All report figures (`M1_*` done; `M3_*` done; `M2_*` to come) and workflow diagrams |
 | `diagrams/` | Graphviz sources for every workflow diagram (M2/M3 templates ready) |
 | `report/` | `main.tex` + `sections/` (one file per section, owners marked at the top of each) |
 | `reference/` | A3 brief, A1 report (used as the Appendix), A1 preprocessing script and data dictionary |

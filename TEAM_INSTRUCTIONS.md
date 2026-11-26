@@ -13,7 +13,7 @@ This file is the current team plan. Clustering is Tushaar's strand; Advaya owns 
 | **Advaya** | Wellbeing: supervised **classification** of `dropout_risk` | 5 (yours), plus 1 Introduction, 7 Synthesis, 8 Conclusions | **assembles and compiles the final report** |
 | **Aman** | Background: supervised **regression** + statistical tests on `exam_score` | 6 (yours) | **makes the video and the slides** |
 
-Most of the work is already set up for you: the data pipeline, a starter script that already fits your models and prints your numbers, the report section with headings and figure slots, and a workflow-diagram template. What is left for each of you: **6 figures, 1 diagram, 1 report section, and your share of the shared work.** Plan on about one day each.
+Advaya’s classification starter and figure slots are ready. Aman’s regression models, five figures and workflow diagram are complete. See [his analysis guide](Member3/README.md) for the verified outputs.
 
 ---
 
@@ -123,9 +123,9 @@ Write it in `report/sections/05_member2_advaya.tex`: replace each red `\todo{...
 
 ## Part C: Aman (regression and statistical tests)
 
-### C1. Make the 5 figures
+### C1. Reproduce the five completed figures
 
-See the `# TODO fig..` comments in `Member3/m3_regression_workflow.py`.
+Run `python Member3/m3_regression_workflow.py` after preprocessing.
 
 | File | What it shows | Chart |
 |---|---|---|
@@ -160,7 +160,7 @@ See the `# TODO fig..` comments in `Member3/m3_regression_workflow.py`.
 
 ### C3. Diagram and Section 6
 
-Same as B3 and B4, using `diagrams/M3_workflow_unrolled.dot` and `report/sections/06_member3_aman.tex`. Update node `b2` in `A3_master_workflow.dot` with your final result and regenerate both diagram formats.
+The individual diagram and the master diagram include the verified results. For the separate team report, follow B4 using `report/sections/06_member3_aman.tex`.
 
 ### C4. Video demo and slides (Aman only)
 
